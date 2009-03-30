@@ -1,0 +1,51 @@
+﻿/* Current page in photo browser (1 of 10) */
+"%d of %d" = "%1$d av %2$d";
+
+"Are you sure you want to cancel?" = "Är du säker på att du vill avbryta?";
+
+"Are you sure?" = "Är du säker?";
+
+"Cancel" = "Avbryt";
+
+"Done" = "Klar";
+
+"Error" = "Fel";
+
+"Load More Photos..." = "Ladda mer bilder...";
+
+"Loading..." = "Laddar...";
+
+"New Message" = "Nytt Meddelande";
+
+"No" = "Nej";
+
+"No Photos" = "Inga Bilder";
+
+/* Title for back button that returns to photo browser */
+"Photo" = "Bild";
+
+"Search" = "Sök";
+
+/* See all photo thumbnails */
+"See All" = "Visa Alla";
+
+"Send" = "Skicka";
+
+"Showing %d of %d Photos" = "Visar %1$d av %2$d bilder";
+
+"Sorry, an error has occurred." = "Tyvärr, ett fel har inträffat.";
+
+"Subject:" = "Ämne:";
+
+"This photo is not available." = "Den här bilden är inte tillgänglig.";
+
+"This photo set contains no photos." = "Det här fotoalbumet innehåller inga bilder.";
+
+"This photo set could not be loaded." = "Den här bilden kunde inte laddas.";
+
+"To:" = "Till:";
+
+"Updating..." = "Uppdaterar...";
+
+"Yes" = "Ja";
+
