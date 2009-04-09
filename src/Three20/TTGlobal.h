@@ -6,7 +6,6 @@
 #import "Three20/UIImageAdditions.h"
 #import "Three20/UIViewControllerAdditions.h"
 #import "Three20/UIViewAdditions.h"
-#import "Three20/UIButtonAdditions.h"
 #import "Three20/UITableViewAdditions.h"
 #import "Three20/UIWebViewAdditions.h"
 #import "Three20/UIToolbarAdditions.h"
@@ -34,6 +33,9 @@
   TTLOG(@"%s left=%f, right=%f, top=%f, bottom=%f", #edges, edges.left, edges.right, \
     edges.top, edges.bottom)
 
+#define TTLOGHSV(_COLOR) \
+  TTLOG(@"%s h=%f, s=%f, v=%f", #_COLOR, _COLOR.hue, _COLOR.saturation, _COLOR.value)
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Errors
 
@@ -49,13 +51,30 @@
 #define KEYBOARD_HEIGHT 216
 #define TABLE_GROUPED_PADDING 10
 #define CHROME_HEIGHT (STATUS_HEIGHT + TOOLBAR_HEIGHT)
+#define TT_ROUNDED -1
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Color helpers
 
-#define RGBA(r,g,b,a) r/256.0, g/256.0, b/256.0, a
 #define RGBCOLOR(r,g,b) [UIColor colorWithRed:r/256.0 green:g/256.0 blue:b/256.0 alpha:1]
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:r/256.0 green:g/256.0 blue:b/256.0 alpha:a]
+
+#define HSVCOLOR(h,s,v) [UIColor colorWithHue:h saturation:s value:v alpha:1]
+#define HSVACOLOR(h,s,v,a) [UIColor colorWithHue:h saturation:s value:v alpha:a]
+
+#define RGBA(r,g,b,a) r/256.0, g/256.0, b/256.0, a
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Style helpers
+
+#define TTSTYLE(_CLASSNAME) [[TTStyleSheet globalStyleSheet] styleWithClassName:@#_CLASSNAME]
+
+#define TTSTYLESTATE(_CLASSNAME, _STATE) [[TTStyleSheet globalStyleSheet] \
+                                           styleWithClassName:@#_CLASSNAME forState:_STATE]
+
+#define TTSTYLEVAR(_VARNAME) [(id)[TTStyleSheet globalStyleSheet] _VARNAME]
+
+#define TTSTYLESHEET ((id)[TTStyleSheet globalStyleSheet])
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Networking
@@ -126,6 +145,11 @@ CGRect TTToolbarNavigationFrame();
  * Returns a rectangle that is smaller or larger than the source rectangle.
  */
 CGRect TTRectContract(CGRect rect, CGFloat dx, CGFloat dy);
+
+/**
+ * Returns a rectangle whose edges have been added to the insets.
+ */
+CGRect TTRectInset(CGRect rect, UIEdgeInsets insets);
  
 /**
  * Increment the number of active network requests.

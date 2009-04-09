@@ -1,6 +1,6 @@
 #import "Three20/TTTableFieldCell.h"
 #import "Three20/TTTableField.h"
-#import "Three20/TTStyledView.h"
+#import "Three20/TTImageView.h"
 #import "Three20/TTErrorView.h"
 #import "Three20/TTStyledTextNode.h"
 #import "Three20/TTStyledText.h"
@@ -8,7 +8,7 @@
 #import "Three20/TTActivityLabel.h"
 #import "Three20/TTNavigationCenter.h"
 #import "Three20/TTURLCache.h"
-#import "Three20/TTAppearance.h"
+#import "Three20/TTDefaultStyleSheet.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -153,21 +153,21 @@ static CGFloat kDefaultIconSize = 50;
 
     if ([object isKindOfClass:[TTGrayTextTableField class]]) {
       _label.font = [UIFont systemFontOfSize:14];
-      _label.textColor = [TTAppearance appearance].tableSubTextColor;
+      _label.textColor = TTSTYLEVAR(tableSubTextColor);
       _label.textAlignment = UITextAlignmentCenter;
     } else if ([object isKindOfClass:[TTButtonTableField class]]) {
       _label.font = [UIFont boldSystemFontOfSize:16];
-      _label.textColor = [TTAppearance appearance].linkTextColor;
+      _label.textColor = TTSTYLEVAR(linkTextColor);
       _label.textAlignment = UITextAlignmentCenter;
       self.accessoryType = UITableViewCellAccessoryNone;
       self.selectionStyle = UITableViewCellSelectionStyleBlue;
     } else if ([object isKindOfClass:[TTLinkTableField class]]) {
       _label.font = [UIFont boldSystemFontOfSize:17];
-      _label.textColor = [TTAppearance appearance].linkTextColor;
+      _label.textColor = TTSTYLEVAR(linkTextColor);
       _label.textAlignment = UITextAlignmentLeft;
     } else if ([object isKindOfClass:[TTSummaryTableField class]]) {
       _label.font = [UIFont systemFontOfSize:17];
-      _label.textColor = [TTAppearance appearance].tableSubTextColor;
+      _label.textColor = TTSTYLEVAR(tableSubTextColor);
       _label.textAlignment = UITextAlignmentCenter;
     } else {
       _label.font = [UIFont boldSystemFontOfSize:17];
@@ -265,7 +265,7 @@ static CGFloat kDefaultIconSize = 50;
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _titleLabel.font = [UIFont boldSystemFontOfSize:13];
-    _titleLabel.textColor = [TTAppearance appearance].linkTextColor;
+    _titleLabel.textColor = TTSTYLEVAR(linkTextColor);
     _titleLabel.highlightedTextColor = [UIColor whiteColor];
     _titleLabel.textAlignment = UITextAlignmentRight;
     _titleLabel.contentMode = UIViewContentModeTop;
@@ -359,7 +359,7 @@ static CGFloat kDefaultIconSize = 50;
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _subtextLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _subtextLabel.font = [UIFont systemFontOfSize:14];
-    _subtextLabel.textColor = [TTAppearance appearance].tableSubTextColor;
+    _subtextLabel.textColor = TTSTYLEVAR(tableSubTextColor);
     _subtextLabel.highlightedTextColor = [UIColor whiteColor];
     _subtextLabel.textAlignment = UITextAlignmentLeft;
     _subtextLabel.contentMode = UIViewContentModeTop;
@@ -447,7 +447,13 @@ static CGFloat kDefaultIconSize = 50;
       constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX) lineBreakMode:UILineBreakModeWordWrap]
     : CGSizeMake(0, 0);
   
-  return kVPadding*2 + textSize.height + subtitleSize.height;
+  CGFloat height = kVPadding*2 + textSize.height + subtitleSize.height;
+  CGFloat minHeight = TOOLBAR_HEIGHT*1.5;
+  if (height < minHeight) {
+    return minHeight;
+  } else {
+    return height;
+  }
 }
 
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString*)identifier {
@@ -456,7 +462,7 @@ static CGFloat kDefaultIconSize = 50;
     
     _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _subtitleLabel.font = [UIFont systemFontOfSize:14];
-    _subtitleLabel.textColor = [TTAppearance appearance].tableSubTextColor;
+    _subtitleLabel.textColor = TTSTYLEVAR(tableSubTextColor);
     _subtitleLabel.highlightedTextColor = [UIColor whiteColor];
     _subtitleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     [self.contentView addSubview:_subtitleLabel];
@@ -513,7 +519,7 @@ static CGFloat kDefaultIconSize = 50;
 
     _label.text = field.text;
     _label.font = [UIFont boldSystemFontOfSize:17];
-    _label.textColor = [TTAppearance appearance].moreLinkTextColor;
+    _label.textColor = TTSTYLEVAR(moreLinkTextColor);
 
     if (field.subtitle) {
       _subtitleLabel.text = field.subtitle;
@@ -574,9 +580,7 @@ static CGFloat kDefaultIconSize = 50;
 
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString*)identifier {
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
-    _iconView = [[TTStyledView alloc] initWithFrame:CGRectZero];
-    _iconView.borderRadius = 8;
-    _iconView.backgroundColor = [UIColor clearColor];
+    _iconView = [[TTImageView alloc] initWithFrame:CGRectZero];
     [self.contentView addSubview:_iconView];
 	}
 	return self;
@@ -600,7 +604,7 @@ static CGFloat kDefaultIconSize = 50;
   if (!image) {
     image = field.defaultImage;
   }
-  if (_iconView.backgroundImageURL) {
+  if (_iconView.url) {
     CGFloat iconWidth = image
       ? image.size.width
       : (field.image ? kDefaultIconSize : 0);
@@ -629,8 +633,8 @@ static CGFloat kDefaultIconSize = 50;
     [super setObject:object];
   
     TTImageTableField* field = object;
-    _iconView.backgroundImageDefault = field.defaultImage;
-    _iconView.backgroundImageURL = field.image;
+    _iconView.defaultImage = field.defaultImage;
+    _iconView.url = field.image;
   }  
 }
 @end
@@ -655,7 +659,7 @@ static CGFloat kDefaultIconSize = 50;
     ? image.size.height
     : (field.image ? kDefaultIconSize : 0);
   
-  if (_iconView.backgroundImageURL) {
+  if (_iconView.url) {
     CGFloat innerWidth = self.contentView.width - (kHPadding*2 + iconWidth + kKeySpacing);
     CGFloat innerHeight = self.contentView.height - kVPadding*2;
     _label.frame = CGRectMake(kHPadding, kVPadding, innerWidth, innerHeight);

@@ -1,6 +1,6 @@
 #import "Three20/TTTabBar.h"
 #import "Three20/TTImageView.h"
-#import "Three20/TTAppearance.h"
+#import "Three20/TTDefaultStyleSheet.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +40,7 @@ static CGFloat kBottomHighlight[] = {RGBA(250, 250, 252, 1)};
     _selectedTabIndex = NSIntegerMax;
     _tabItems = nil;
     _tabViews = [[NSMutableArray alloc] init];
-    self.textColor = [TTAppearance appearance].linkTextColor;
+    self.textColor = TTSTYLEVAR(linkTextColor);
     _tintColor = nil;
     
     self.contentMode = UIViewContentModeLeft;
@@ -90,6 +90,7 @@ static CGFloat kBottomHighlight[] = {RGBA(250, 250, 252, 1)};
   [_overflowLeft release];
   [_overflowRight release];
   [_scrollView release];
+  [_tabImage release];
   [_textColor release];
   [_tintColor release];
   [super dealloc];
