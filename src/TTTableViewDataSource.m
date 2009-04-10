@@ -222,6 +222,10 @@
   return [[[self alloc] initWithItems:items] autorelease];
 }
 
++ (TTListDataSource*)dataSourceWithItems:(NSMutableArray*)items {
+  return [[[self alloc] initWithItems:items] autorelease];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
@@ -307,6 +311,28 @@
   }
   va_end(ap);
 
+  return [[[self alloc] initWithItems:items sections:sections] autorelease];
+}
+
++ (TTSectionedDataSource*)dataSourceWithArrays:(id)object,... {
+  NSMutableArray* items = [NSMutableArray array];
+  NSMutableArray* sections = [NSMutableArray array];
+  va_list ap;
+  va_start(ap, object);
+  while (object) {
+    if ([object isKindOfClass:[NSString class]]) {
+      [sections addObject:object];
+    } else {
+      [items addObject:object];
+    }
+    object = va_arg(ap, id);
+  }
+  va_end(ap);
+
+  return [[[self alloc] initWithItems:items sections:sections] autorelease];
+}
+
++ (TTSectionedDataSource*)dataSourceWithItems:(NSArray*)items sections:(NSArray*)sections {
   return [[[self alloc] initWithItems:items sections:sections] autorelease];
 }
 

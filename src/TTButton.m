@@ -138,10 +138,10 @@ static const CGFloat kVPadding = 7;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class public
 
-+ (TTButton*)buttonWithStyle:(NSString*)className title:(NSString*)title {
++ (TTButton*)buttonWithStyle:(NSString*)selector title:(NSString*)title {
   TTButton* button = [[[TTButton alloc] initWithFrame:CGRectZero] autorelease];
   [button setTitle:title forState:UIControlStateNormal];
-  [button setStylesWithClassName:className];
+  [button setStylesWithSelector:selector];
 
   return button;
 }
@@ -156,7 +156,7 @@ static const CGFloat kVPadding = 7;
 - (CGRect)rectForTitle:(NSString*)title forSize:(CGSize)size withFont:(UIFont*)font {
   CGRect rect = CGRectZero;
   if (self.contentHorizontalAlignment == UIControlContentHorizontalAlignmentLeft
-      && self.contentHorizontalAlignment == UIControlContentVerticalAlignmentTop) {
+      && self.contentVerticalAlignment == UIControlContentVerticalAlignmentTop) {
     rect.size = size;
   } else {
     CGSize textSize = [title sizeWithFont:font];
@@ -222,10 +222,10 @@ static const CGFloat kVPadding = 7;
 
 - (TTButtonContent*)contentForCurrentState {
   TTButtonContent* content = nil;
-  if (self.highlighted) {
-    content = [self contentForState:UIControlStateHighlighted];
-  } else if (self.selected) {
+  if (self.selected) {
     content = [self contentForState:UIControlStateSelected];
+  } else if (self.highlighted) {
+    content = [self contentForState:UIControlStateHighlighted];
   } else if (!self.enabled) {
     content = [self contentForState:UIControlStateDisabled];
   }
@@ -305,14 +305,21 @@ static const CGFloat kVPadding = 7;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
-  NSString* title = [self titleForCurrentState];
-  UIFont* font = [self fontForCurrentState];
+  TTStyle* style = [self styleForCurrentState];
+  if (style) {
+    return [style addToSize:CGSizeZero delegate:self];
+  } else {
+    return size;
+  }
 
-  CGRect textRect = [self rectForTitle:title forSize:size withFont:font];
-  UIEdgeInsets insets = [self insetsForCurrentStateWithSize:textRect.size];
-  
-  return CGSizeMake(textRect.size.width + insets.left + insets.right,
-                    textRect.size.height + insets.top + insets.bottom);
+//  NSString* title = [self titleForCurrentState];
+//  UIFont* font = [self fontForCurrentState];
+//
+//  CGRect textRect = [self rectForTitle:title forSize:size withFont:font];
+//  UIEdgeInsets insets = [self insetsForCurrentStateWithSize:textRect.size];
+//  
+//  return CGSizeMake(textRect.size.width + insets.left + insets.right,
+//                    textRect.size.height + insets.top + insets.bottom);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +343,7 @@ static const CGFloat kVPadding = 7;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // TTStyleDelegate
 
-- (void)drawContent:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
+- (void)drawLayer:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
   NSString* title = [self titleForCurrentState];
   UIEdgeInsets shapeInsets = [shape insetsForSize:rect.size];
   CGRect innerRect = TTRectInset(rect, shapeInsets);
@@ -363,6 +370,10 @@ static const CGFloat kVPadding = 7;
       [self drawTitle:title inRect:innerRect withFont:[self defaultFont]];
     }
   }
+}
+
+- (NSString*)textForLayerWithStyle:(TTStyle*)style {
+  return [self titleForCurrentState];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -403,19 +414,19 @@ static const CGFloat kVPadding = 7;
   content.style = style;
 }
 
-- (void)setStylesWithClassName:(NSString*)className {
+- (void)setStylesWithSelector:(NSString*)selector {
   TTStyleSheet* ss = [TTStyleSheet globalStyleSheet];
   
-  TTStyle* normalStyle = [ss styleWithClassName:className forState:UIControlStateNormal];
+  TTStyle* normalStyle = [ss styleWithSelector:selector forState:UIControlStateNormal];
   [self setStyle:normalStyle forState:UIControlStateNormal];
 
-  TTStyle* highlightedStyle = [ss styleWithClassName:className forState:UIControlStateHighlighted];
+  TTStyle* highlightedStyle = [ss styleWithSelector:selector forState:UIControlStateHighlighted];
   [self setStyle:highlightedStyle forState:UIControlStateHighlighted];
 
-  TTStyle* selectedStyle = [ss styleWithClassName:className forState:UIControlStateSelected];
+  TTStyle* selectedStyle = [ss styleWithSelector:selector forState:UIControlStateSelected];
   [self setStyle:selectedStyle forState:UIControlStateSelected];
 
-  TTStyle* disabledStyle = [ss styleWithClassName:className forState:UIControlStateDisabled];
+  TTStyle* disabledStyle = [ss styleWithSelector:selector forState:UIControlStateDisabled];
   [self setStyle:disabledStyle forState:UIControlStateDisabled];
 }
 

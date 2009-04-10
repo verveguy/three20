@@ -47,10 +47,14 @@
   }
 }
 
+- (CGSize)sizeThatFits:(CGSize)size {
+  return [_style addToSize:CGSizeZero delegate:self];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // TTStyleDelegate
 
-- (void)drawContent:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
+- (void)drawLayer:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

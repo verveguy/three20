@@ -89,6 +89,14 @@ static const NSInteger kDefaultLightSource = 125;
   }
 }
 
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
+}
+
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +114,7 @@ static const NSInteger kDefaultLightSource = 125;
 // TTStyle
 
 - (BOOL)drawRect:(CGRect)rect shape:(TTShape*)shape delegate:(id<TTStyleDelegate>)delegate {
-  [delegate drawContent:rect withStyle:self shape:shape];
+  [delegate drawLayer:rect withStyle:self shape:shape];
   [self.next drawRect:rect shape:shape delegate:delegate];
   return YES;
 }
@@ -164,6 +172,18 @@ static const NSInteger kDefaultLightSource = 125;
   }
 }
 
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {
+  UIEdgeInsets shapeInsets = [_shape insetsForSize:size];
+  size.width += shapeInsets.left + shapeInsets.right;
+  size.height += shapeInsets.top + shapeInsets.bottom;
+
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
+}
+
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,9 +237,52 @@ static const NSInteger kDefaultLightSource = 125;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@implementation TTPaddingStyle
+
+@synthesize padding = _padding;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// NSObject
+
++ (TTPaddingStyle*)styleWithPadding:(UIEdgeInsets)padding next:(TTStyle*)next {
+  TTPaddingStyle* style = [[[self alloc] initWithNext:next] autorelease];
+  style.padding = padding;
+  return style;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// NSObject
+
+- (id)initWithNext:(TTStyle*)next {  
+  if (self = [super initWithNext:next]) {
+    _padding = UIEdgeInsetsZero;
+  }
+  return self;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTStyle
+
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {
+  size.width += _padding.left + _padding.right;
+  size.height += _padding.top + _padding.bottom;
+
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
+}
+
+@end
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 @implementation TTTextStyle
 
-@synthesize font = _font, color = _color, shadowColor = _shadowColor, shadowOffset = _shadowOffset;
+@synthesize font = _font, color = _color, shadowColor = _shadowColor, shadowOffset = _shadowOffset,
+            minimumFontSize = _minimumFontSize, textAlignment = _textAlignment,
+            verticalAlignment = _verticalAlignment;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class public
@@ -254,6 +317,68 @@ static const NSInteger kDefaultLightSource = 125;
   return style;
 }
 
++ (TTTextStyle*)styleWithFont:(UIFont*)font color:(UIColor*)color
+                minimumFontSize:(CGFloat)minimumFontSize
+                shadowColor:(UIColor*)shadowColor shadowOffset:(CGSize)shadowOffset
+                next:(TTStyle*)next {
+  TTTextStyle* style = [[[self alloc] initWithNext:next] autorelease];
+  style.font = font;
+  style.color = color;
+  style.minimumFontSize = minimumFontSize;
+  style.shadowColor = shadowColor;
+  style.shadowOffset = shadowOffset;
+  return style;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// private
+
+- (CGRect)rectForText:(NSString*)text forSize:(CGSize)size withFont:(UIFont*)font {
+  CGRect rect = CGRectZero;
+  if (_textAlignment == UITextAlignmentLeft
+      && _verticalAlignment == UIControlContentVerticalAlignmentTop) {
+    rect.size = size;
+  } else {
+    CGSize textSize = [text sizeWithFont:font];
+
+    if (size.width < textSize.width) {
+      size.width = textSize.width;
+    }
+    
+    rect.size = textSize;
+    
+    if (_textAlignment == UITextAlignmentCenter) {
+      rect.origin.x = round(size.width/2 - textSize.width/2);
+    } else if (_textAlignment == UITextAlignmentRight) {
+      rect.origin.x = size.width - textSize.width;
+    }
+
+    if (_verticalAlignment == UIControlContentVerticalAlignmentCenter) {
+      rect.origin.y = round(size.height/2 - textSize.height/2);
+    } else if (_verticalAlignment == UIControlContentVerticalAlignmentBottom) {
+      rect.origin.y = size.height - textSize.height;
+    }
+  }
+  return rect;
+}
+
+- (void)drawText:(NSString*)text inRect:(CGRect)rect {
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+
+  if (_shadowColor) {
+    CGSize offset = CGSizeMake(_shadowOffset.width, -_shadowOffset.height);
+    CGContextSetShadowWithColor(context, offset, 0, _shadowColor.CGColor);
+  }
+
+  if (_color) {
+    [_color setFill];
+  }
+
+  CGRect titleRect = [self rectForText:text forSize:rect.size withFont:_font];
+  [text drawInRect:CGRectOffset(titleRect, rect.origin.x, rect.origin.y) withFont:_font];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
@@ -261,8 +386,11 @@ static const NSInteger kDefaultLightSource = 125;
   if (self = [super initWithNext:next]) {
     _font = nil;
     _color = nil;
+    _minimumFontSize = 0;
     _shadowColor = nil;
     _shadowOffset = CGSizeZero;
+    _textAlignment = UITextAlignmentCenter;
+    _verticalAlignment = UIControlContentVerticalAlignmentCenter;
   }
   return self;
 }
@@ -277,9 +405,38 @@ static const NSInteger kDefaultLightSource = 125;
 // TTStyle
 
 - (BOOL)drawRect:(CGRect)rect shape:(TTShape*)shape delegate:(id<TTStyleDelegate>)delegate {
-  [delegate drawContent:rect withStyle:self shape:shape];
+  BOOL handled = NO;
+  
+  if ([delegate respondsToSelector:@selector(textForLayerWithStyle:)]) {
+    NSString* text = [delegate textForLayerWithStyle:self];
+    if (text) {
+      handled = YES;
+      [self drawText:text inRect:rect];
+    }
+  }
+  
+  if (!handled && [delegate respondsToSelector:@selector(drawLayer:withStyle:shape:)]) {
+    [delegate drawLayer:rect withStyle:self shape:shape];
+    handled = YES;
+  }
+  
   [self.next drawRect:rect shape:shape delegate:delegate];
-  return YES;
+  return handled;
+}
+
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {
+  if ([delegate respondsToSelector:@selector(textForLayerWithStyle:)]) {
+    NSString* text = [delegate textForLayerWithStyle:self];
+    CGSize textSize = [text sizeWithFont:_font];
+    size.width += textSize.width;
+    size.height += textSize.height;
+  }
+  
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
 }
 
 @end
@@ -293,6 +450,12 @@ static const NSInteger kDefaultLightSource = 125;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class public
 
++ (TTImageStyle*)styleWithImageURL:(NSString*)imageURL next:(TTStyle*)next {
+  TTImageStyle* style = [[[self alloc] initWithNext:next] autorelease];
+  style.imageURL = imageURL;
+  return style;
+}
+
 + (TTImageStyle*)styleWithImageURL:(NSString*)imageURL defaultImage:(UIImage*)defaultImage
                  next:(TTStyle*)next {
   TTImageStyle* style = [[[self alloc] initWithNext:next] autorelease];
@@ -301,7 +464,13 @@ static const NSInteger kDefaultLightSource = 125;
   return style;
 }
 
-+ (TTImageStyle*)initWithImage:(UIImage*)image defaultImage:(UIImage*)defaultImage
++ (TTImageStyle*)styleWithImage:(UIImage*)image  next:(TTStyle*)next {
+  TTImageStyle* style = [[[self alloc] initWithNext:next] autorelease];
+  style.image = image;
+  return style;
+}
+
++ (TTImageStyle*)styleWithImage:(UIImage*)image defaultImage:(UIImage*)defaultImage
                  next:(TTStyle*)next {
   TTImageStyle* style = [[[self alloc] initWithNext:next] autorelease];
   style.image = image;
@@ -326,6 +495,32 @@ static const NSInteger kDefaultLightSource = 125;
   [_image release];
   [_defaultImage release];
   [super dealloc];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTStyle
+
+- (BOOL)drawRect:(CGRect)rect shape:(TTShape*)shape delegate:(id<TTStyleDelegate>)delegate {
+  if (_image) {
+    [_image drawInRect:rect];
+  } else if (_defaultImage) {
+    [_defaultImage drawInRect:rect];
+  }
+  return [self.next drawRect:rect shape:shape delegate:delegate];
+}
+
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {  
+  UIImage* image = _image ? _image : _defaultImage;
+  if (image) {
+    size.width += image.size.width;
+    size.height += image.size.height;
+  }
+  
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
 }
 
 @end
@@ -546,6 +741,24 @@ static const NSInteger kDefaultLightSource = 125;
 // TTStyle
 
 - (BOOL)drawRect:(CGRect)rect shape:(TTShape*)shape delegate:(id<TTStyleDelegate>)delegate {
+  rect.size.width -= fabs(_offset.width);
+  rect.size.height -= fabs(_offset.height);
+
+  CGFloat blurSize = round(_blur / 2);
+
+  if (_offset.width < 0) {
+    rect.origin.x += -_offset.width;
+    rect.size.width -= blurSize;
+  } else if (_offset.width > 0) {
+    rect.size.width -= blurSize;
+  }
+  if (_offset.height < 0) {
+    rect.origin.y += -_offset.height;
+    rect.size.height -= blurSize;
+  } else if (_offset.height > 0) {
+    rect.size.height -= blurSize;
+  }
+
   CGContextRef context = UIGraphicsGetCurrentContext();
 
   CGContextSaveGState(context);
@@ -555,10 +768,21 @@ static const NSInteger kDefaultLightSource = 125;
                               _color.CGColor);
   CGContextFillPath(context);
   CGContextRestoreGState(context);
-
+  
   return [self.next drawRect:rect shape:shape delegate:delegate];
 }
 
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate {
+  CGFloat blurSize = round(_blur / 2);
+  size.width += _offset.width + (_offset.width ? blurSize : 0);
+  size.height += _offset.height + (_offset.height ? blurSize : 0);
+  
+  if (_next) {
+    return [self.next addToSize:size delegate:delegate];
+  } else {
+    return size;
+  }
+}
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

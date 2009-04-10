@@ -105,7 +105,7 @@
           style = linkStyle;
         }
         TTStyledSpanNode* span = (TTStyledSpanNode*)node;
-        TTStyle* spanStyle = [[TTStyleSheet globalStyleSheet] styleWithClassName:span.className];
+        TTStyle* spanStyle = [[TTStyleSheet globalStyleSheet] styleWithSelector:span.className];
         if (spanStyle) {
           style = spanStyle;
         }
@@ -392,7 +392,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // TTStyleDelegate
 
-- (void)drawContent:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
+- (void)drawLayer:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape {
   if ([style isKindOfClass:[TTTextStyle class]]) {
     TTTextStyle* textStyle = (TTTextStyle*)style;
     UIFont* font = textStyle.font ? textStyle.font : _font;

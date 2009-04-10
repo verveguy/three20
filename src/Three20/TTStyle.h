@@ -13,9 +13,10 @@
 
 - (BOOL)drawRect:(CGRect)rect shape:(TTShape*)shape delegate:(id<TTStyleDelegate>)delegate;
 
-- (TTStyle*)firstStyleOfClass:(Class)cls;
-
 - (UIEdgeInsets)addToInsets:(UIEdgeInsets)insets forSize:(CGSize)size;
+- (CGSize)addToSize:(CGSize)size delegate:(id<TTStyleDelegate>)delegate;
+
+- (TTStyle*)firstStyleOfClass:(Class)cls;
 
 @end
 
@@ -56,22 +57,44 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@interface TTPaddingStyle : TTStyle {
+  UIEdgeInsets _padding;
+}
+
+@property(nonatomic) UIEdgeInsets padding;
+
++ (TTPaddingStyle*)styleWithPadding:(UIEdgeInsets)padding next:(TTStyle*)next;
+
+@end
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 @interface TTTextStyle : TTStyle {
   UIFont* _font;
   UIColor* _color;
   UIColor* _shadowColor;
   CGSize _shadowOffset;
+  CGFloat _minimumFontSize;
+  UITextAlignment _textAlignment;
+  UIControlContentVerticalAlignment _verticalAlignment;
 }
 
 @property(nonatomic,retain) UIFont* font;
 @property(nonatomic,retain) UIColor* color;
 @property(nonatomic,retain) UIColor* shadowColor;
+@property(nonatomic) CGFloat minimumFontSize;
 @property(nonatomic) CGSize shadowOffset;
+@property(nonatomic) UITextAlignment textAlignment;
+@property(nonatomic) UIControlContentVerticalAlignment verticalAlignment;
 
 + (TTTextStyle*)styleWithFont:(UIFont*)font next:(TTStyle*)next;
 + (TTTextStyle*)styleWithColor:(UIColor*)color next:(TTStyle*)next;
 + (TTTextStyle*)styleWithFont:(UIFont*)font color:(UIColor*)color next:(TTStyle*)next;
 + (TTTextStyle*)styleWithFont:(UIFont*)font color:(UIColor*)color
+                shadowColor:(UIColor*)shadowColor shadowOffset:(CGSize)shadowOffset
+                next:(TTStyle*)next;
++ (TTTextStyle*)styleWithFont:(UIFont*)font color:(UIColor*)color
+                minimumFontSize:(CGFloat)minimumFontSize
                 shadowColor:(UIColor*)shadowColor shadowOffset:(CGSize)shadowOffset
                 next:(TTStyle*)next;
 
@@ -89,9 +112,11 @@
 @property(nonatomic,retain) UIImage* image;
 @property(nonatomic,retain) UIImage* defaultImage;
 
++ (TTImageStyle*)styleWithImageURL:(NSString*)imageURL next:(TTStyle*)next;
 + (TTImageStyle*)styleWithImageURL:(NSString*)imageURL defaultImage:(UIImage*)defaultImage
                  next:(TTStyle*)next;
-+ (TTImageStyle*)initWithImage:(UIImage*)image defaultImage:(UIImage*)defaultImage
++ (TTImageStyle*)styleWithImage:(UIImage*)image next:(TTStyle*)next;
++ (TTImageStyle*)styleWithImage:(UIImage*)image defaultImage:(UIImage*)defaultImage
                  next:(TTStyle*)next;
 
 @end
@@ -216,8 +241,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-@protocol TTStyleDelegate
+@protocol TTStyleDelegate <NSObject>
 
-- (void)drawContent:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape;
+@optional
+
+- (NSString*)textForLayerWithStyle:(TTStyle*)style;
+
+- (UIImage*)imageForLayerWithStyle:(TTStyle*)style;
+
+- (void)drawLayer:(CGRect)rect withStyle:(TTStyle*)style shape:(TTShape*)shape;
 
 @end
