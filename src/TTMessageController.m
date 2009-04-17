@@ -222,6 +222,7 @@
       }
     } else if ([field isKindOfClass:[TTMessageTextField class]]) {
       textField = [[[TTPickerTextField alloc] initWithFrame:CGRectZero] autorelease];
+      textField.text = [((TTMessageTextField *)field) text];
     }
     
     if (textField) {
