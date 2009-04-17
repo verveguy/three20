@@ -7,6 +7,7 @@
   NSString* _httpMethod;
   NSData* _httpBody;
   NSMutableDictionary* _parameters;
+  NSMutableDictionary* _headers;
   NSString* _contentType;
   NSMutableArray* _delegates;
   id<TTURLResponse> _response;
@@ -19,6 +20,11 @@
   BOOL _shouldHandleCookies;
   BOOL _respondedFromCache;
 }
+
+/**
+ * custom request headers
+ */
+@property(nonatomic,readonly) NSMutableDictionary* headers;
 
 /**
  * An object that receives messages about the progress of the request.
@@ -100,6 +106,11 @@
  * not be cancelled.
  */
 - (void)cancel;
+
+/**
+ * Sets the specified HTTP header field.
+ */
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field;
 
 @end
 
