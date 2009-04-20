@@ -49,7 +49,7 @@
 /**
  * The HTTP body to send with the request.
  */
-@property(nonatomic,readonly) NSData* httpBody;
+@property(nonatomic,copy) NSData* httpBody;
 
 /**
  * The content type of the data in the request.
