@@ -9,7 +9,7 @@
 
 "Done" = "Klar";
 
-"Error" = "Fel";
+"Error" = "Problem";
 
 "Load More Photos..." = "Ladda mer bilder...";
 
@@ -33,7 +33,7 @@
 
 "Showing %d of %d Photos" = "Visar %1$d av %2$d bilder";
 
-"Sorry, an error has occurred." = "Tyvärr, ett fel har inträffat.";
+"Sorry, an error has occurred." = "Tyvärr, ett problem har uppståt.";
 
 "Subject:" = "Ämne:";
 
