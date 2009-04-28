@@ -104,7 +104,8 @@
 
 @implementation TTMessageController
 
-@synthesize delegate = _delegate, dataSource = _dataSource, fields = _fields;
+@synthesize delegate = _delegate, dataSource = _dataSource, fields = _fields,
+        messageRequired = _messageRequired;
 
 - (id)initWithRecipients:(NSArray*)recipients {
   if (self = [self init]) {
@@ -126,6 +127,7 @@
     _fieldViews = nil;
     _initialRecipients = nil;
     _statusView = nil;
+    _messageRequired = YES;
     
     self.title = TTLocalizedString(@"New Message", @"");
 
@@ -284,7 +286,11 @@
     }
   }
 
-  _navigationBar.topItem.rightBarButtonItem.enabled = compliant && _textEditor.text.length;
+  if (self.messageRequired) {
+    compliant &= _textEditor.text.length;
+  }
+
+  _navigationBar.topItem.rightBarButtonItem.enabled = compliant;
 }
 
 - (UITextField*)subjectField {

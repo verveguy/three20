@@ -14,6 +14,7 @@
   TTTextEditor* _textEditor;
   TTActivityLabel* _statusView;
   NSArray* _initialRecipients;
+  BOOL _messageRequired;
 }
 
 @property(nonatomic,assign) id<TTMessageControllerDelegate> delegate;
@@ -21,6 +22,7 @@
 @property(nonatomic,retain) NSArray* fields;
 @property(nonatomic,retain) NSString* subject;
 @property(nonatomic,retain) NSString* body;
+@property(nonatomic) BOOL messageRequired;
 
 - (id)initWithRecipients:(NSArray*)recipients;
 
