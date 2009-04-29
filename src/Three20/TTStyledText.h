@@ -1,7 +1,7 @@
 #import "Three20/TTURLRequest.h"
 
 @protocol TTStyledTextDelegate;
-@class TTStyledNode, TTStyledFrame, TTStyledBoxFrame;
+@class TTStyledNode, TTStyledFrame, TTStyledBoxFrame, TTStyledLinkNode;
 
 @interface TTStyledText : NSObject <TTURLRequestDelegate> {
   id<TTStyledTextDelegate> _delegate;
@@ -143,5 +143,6 @@
 @optional
 
 - (void)styledTextNeedsDisplay:(TTStyledText*)text;
+- (void)styledLinkNodeTouched:(TTStyledLinkNode*)link;
 
 @end

@@ -111,9 +111,17 @@ static const CGFloat kCancelHighlightThreshold = 4;
     
     TTStyledBoxFrame* affectFrame = frame ? frame : _highlightedFrame;
     NSString* className = affectFrame.element.className;
-    if (!className && [affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
-      className = @"linkText:";
-    }
+
+	  if([affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+		  if (!className) {
+			  className = @"linkText:";
+		  }
+		  
+		  if(frame && _text.delegate && [_text.delegate respondsToSelector:@selector(styledLinkNodeTouched:)]) {
+			  [_text.delegate styledLinkNodeTouched:(TTStyledLinkNode*) affectFrame.element];
+		  }
+	  }
+
     
     if (className && [className rangeOfString:@":"].location != NSNotFound) {
       if (frame) {
@@ -176,6 +184,25 @@ static const CGFloat kCancelHighlightThreshold = 4;
 - (void)styledTextNeedsDisplay:(TTStyledText*)text {
   [self setNeedsDisplay];
 }
+
+- (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link {
+	[[[[UIAlertView alloc] initWithTitle:@"Link Touched" 
+								message:[NSString stringWithFormat:@"Open this URL in Safari? %@. ",link.url]
+							   delegate:self 
+					  cancelButtonTitle:@"Cancel" 
+					  otherButtonTitles:@"Open",nil] autorelease] show];	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if(buttonIndex == 1 && _highlightedFrame && [_highlightedFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+		NSString *url = ((TTStyledLinkNode*)_highlightedFrame.element).url;
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
