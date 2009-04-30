@@ -78,3 +78,11 @@
 @interface TTMessageSubjectField : TTMessageTextField
 
 @end
+
+@interface TTMessageDateField : TTMessageField {
+    NSDate* _date;
+}
+
+@property(nonatomic,copy) NSDate* date;
+
+@end

@@ -102,6 +102,198 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@implementation TTMessageDateField
+
+@synthesize date = _date;
+
+- (void)dealloc {
+    [_date release];
+    [super dealloc];
+}
+
+@end
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef enum {
+  TTDateFieldModeDate,
+  TTDateFieldModeTime,
+  TTDateFieldModeDateAndTime
+} TTDateFieldMode;
+
+@interface TTDateField : UIControl {
+  TTDateFieldMode _dateFieldMode;
+  NSDateFormatter *_formatter;
+  UIDatePicker *_pickerView;
+  UILabel *_valueLabel;
+  UIView *_leftView;
+}
+
+@property (nonatomic) TTDateFieldMode dateFieldMode;
+
+@property (nonatomic, retain) NSDateFormatter *formatter;
+@property (nonatomic, retain) UIDatePicker *pickerView;
+@property (nonatomic, retain) UILabel *valueLabel;
+@property (nonatomic, retain) UIView *leftView;
+
+@property (nonatomic, retain) NSDate *date;
+
+@end
+
+@implementation TTDateField
+
+@synthesize dateFieldMode = _dateFieldMode, formatter = _formatter;
+@synthesize pickerView = _pickerView, valueLabel = _valueLabel, leftView = _leftView;
+
+- (id)initWithFrame:(CGRect)frame {
+  if (self = [super initWithFrame:frame]) {
+    _formatter = [NSDateFormatter new];
+    [_formatter setDateStyle:NSDateFormatterMediumStyle];
+    self.valueLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+    self.valueLabel.font = TTSTYLEVAR(messageFont);
+    self.date = [NSDate date];
+    self.userInteractionEnabled = YES;
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [_formatter release], _formatter = nil;
+  [_pickerView release], _pickerView = nil;
+  [_valueLabel release], _valueLabel = nil;
+  [_leftView release], _leftView = nil;
+  [super dealloc];
+}
+
+- (UIDatePicker *)pickerView {
+  if (_pickerView == nil) {
+    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+    CGRect frame = keyWindow.frame;
+    frame.origin.y = frame.size.height - KEYBOARD_HEIGHT;
+    frame.size.height = KEYBOARD_HEIGHT;
+    _pickerView = [[UIDatePicker alloc] initWithFrame:frame];
+    _pickerView.hidden = YES;
+    [_pickerView addTarget:self action:@selector(dateChanged) forControlEvents:UIControlEventValueChanged];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
+        name:UIKeyboardWillShowNotification object:nil];
+    
+    [keyWindow addSubview:_pickerView];
+  }
+  return _pickerView;
+}
+
+- (void)keyboardWillShow {
+  [UIView beginAnimations:@"disableKeyboardSlideIn" context:nil];
+  [UIView setAnimationsEnabled:NO];
+}
+  
+
+- (NSDate *)date {
+  return self.pickerView.date;
+}
+
+- (void)setDate:(NSDate *)date {
+  if (date) {
+    self.pickerView.date = date;
+    self.valueLabel.text = [self.formatter stringFromDate:date];
+  }
+}
+
+- (void)dateChanged {
+  self.valueLabel.text = [self.formatter stringFromDate:self.date];
+}
+
+- (void)setDateFieldMode:(TTDateFieldMode)dateFieldMode {
+  _dateFieldMode = dateFieldMode;
+  switch (dateFieldMode) {
+    case TTDateFieldModeDate:
+      [self.formatter setDateStyle:NSDateFormatterLongStyle];
+      [self.formatter setTimeStyle:NSDateFormatterNoStyle];
+      self.pickerView.datePickerMode = UIDatePickerModeDate;
+      break;
+    case TTDateFieldModeTime:
+      [self.formatter setDateStyle:NSDateFormatterNoStyle];
+      [self.formatter setTimeStyle:NSDateFormatterMediumStyle];
+      self.pickerView.datePickerMode = UIDatePickerModeTime;
+      break;
+    case TTDateFieldModeDateAndTime:
+      [self.formatter setDateStyle:NSDateFormatterLongStyle];
+      [self.formatter setTimeStyle:NSDateFormatterMediumStyle];
+      self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
+      break;
+  }
+  [self dateChanged];
+}
+
+- (void)setLeftView:(UIView *)leftView {
+  if (leftView != _leftView) {
+    [_leftView removeFromSuperview];
+    [self addSubview:leftView];
+    _leftView = leftView;
+  }
+}
+
+- (void)setValueLabel:(UILabel *)valueLabel {
+  if (valueLabel != _valueLabel) {
+    [_valueLabel removeFromSuperview];
+    [self addSubview:valueLabel];
+    _valueLabel = valueLabel;
+  }
+}
+
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (BOOL)becomeFirstResponder {
+  _pickerView.hidden = NO;
+  [UIView beginAnimations:@"disableKeyboardSlideOut" context:nil];
+  [UIView setAnimationsEnabled:NO];
+  BOOL returnVal = [super becomeFirstResponder];
+  [UIView commitAnimations];
+  [UIView setAnimationsEnabled:YES];
+  return returnVal;
+}
+
+- (BOOL)canResignFirstResponder {
+  return YES;
+}
+
+- (BOOL)resignFirstResponder {
+  _pickerView.hidden = YES;
+  BOOL returnVal = [super resignFirstResponder];
+  [UIView commitAnimations];
+  [UIView setAnimationsEnabled:YES];
+  return returnVal;
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+  [self becomeFirstResponder];
+}
+
+- (void)sizeToFit {
+  [_valueLabel sizeToFit];
+  self.frame = CGRectInset(_valueLabel.frame, 0, -6);
+}
+
+- (void)layoutSubviews {
+  CGRect labelFrame = self.bounds;
+  
+  if (self.leftView) {
+    labelFrame.size.width -= CGRectGetMaxX(self.leftView.frame);
+    labelFrame.origin.x = CGRectGetMaxX(self.leftView.frame) + 1;
+  }
+  
+  self.valueLabel.frame = labelFrame;
+}
+
+@end
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 @implementation TTMessageController
 
 @synthesize delegate = _delegate, dataSource = _dataSource, fields = _fields,
@@ -197,6 +389,33 @@
   }
 }
 
+- (UILabel *) titleLabelForField:(TTMessageField *) field  {
+  UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  label.text = field.title;
+  label.font = TTSTYLEVAR(messageFont);
+  label.textColor = TTSTYLEVAR(messageFieldTextColor);
+  [label sizeToFit];
+  label.frame = CGRectInset(label.frame, -2, 0);
+  
+  return label;
+}
+
+- (TTPickerTextField *)pickerFieldForField:(TTMessageField *)field {
+  TTPickerTextField *textField = [[[TTPickerTextField alloc] initWithFrame:CGRectZero] autorelease];
+  
+  textField.delegate = self;
+  textField.backgroundColor = TTSTYLEVAR(backgroundColor);
+  textField.font = TTSTYLEVAR(messageFont);
+  textField.returnKeyType = UIReturnKeyNext;
+  [textField sizeToFit];
+  
+  UILabel *label = [self titleLabelForField:field];
+  textField.leftView = label;
+  textField.leftViewMode = UITextFieldViewModeAlways;
+
+  return textField;
+}
+
 - (void)createFieldViews {
   for (UIView* view in _fieldViews) {
     [view removeFromSuperview];
@@ -208,9 +427,10 @@
   _fieldViews = [[NSMutableArray alloc] init];
 
   for (TTMessageField* field in _fields) {
-    TTPickerTextField* textField = nil;
+    UIView *fieldView = nil;
+    
     if ([field isKindOfClass:[TTMessageRecipientField class]]) {
-      textField = [[[TTPickerTextField alloc] initWithFrame:CGRectZero] autorelease];
+      TTPickerTextField* textField = [self pickerFieldForField:field];
       textField.dataSource = _dataSource;
       textField.autocorrectionType = UITextAutocorrectionTypeNo;
       textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -222,29 +442,23 @@
           forControlEvents:UIControlEventTouchUpInside];
         textField.rightView = addButton;
       }
+      fieldView = textField;
     } else if ([field isKindOfClass:[TTMessageTextField class]]) {
-      textField = [[[TTPickerTextField alloc] initWithFrame:CGRectZero] autorelease];
+      TTPickerTextField* textField = [self pickerFieldForField:field];
       textField.text = [((TTMessageTextField *)field) text];
+      fieldView = textField;
+    } else if ([field isKindOfClass:[TTMessageDateField class]]) {
+      TTDateField *dateField = [[TTDateField alloc] initWithFrame:CGRectZero];
+      dateField.date = [(TTMessageDateField *)field date];
+      dateField.dateFieldMode = TTDateFieldModeDateAndTime;
+      dateField.leftView = [self titleLabelForField:field];
+      [dateField sizeToFit];
+      fieldView = dateField;
     }
     
-    if (textField) {
-      textField.delegate = self;
-      textField.backgroundColor = TTSTYLEVAR(backgroundColor);
-      textField.font = TTSTYLEVAR(messageFont);
-      textField.returnKeyType = UIReturnKeyNext;
-      [textField sizeToFit];
-      
-      UILabel* label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-      label.text = field.title;
-      label.font = TTSTYLEVAR(messageFont);
-      label.textColor = TTSTYLEVAR(messageFieldTextColor);
-      [label sizeToFit];
-      label.frame = CGRectInset(label.frame, -2, 0);
-      textField.leftView = label;
-      textField.leftViewMode = UITextFieldViewModeAlways;
-
-      [_scrollView addSubview:textField];
-      [_fieldViews addObject:textField];
+    if (fieldView) {
+      [_scrollView addSubview:fieldView];
+      [_fieldViews addObject:fieldView];
 
       UIView* separator = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 1)] autorelease];
       separator.backgroundColor = TTSTYLEVAR(messageFieldSeparatorColor);
