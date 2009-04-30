@@ -117,8 +117,8 @@ static const CGFloat kCancelHighlightThreshold = 4;
 			  className = @"linkText:";
 		  }
 		  
-		  if(frame && _text.delegate && [_text.delegate respondsToSelector:@selector(styledLinkNodeTouched:)]) {
-			  [_text.delegate styledLinkNodeTouched:(TTStyledLinkNode*) affectFrame.element];
+		  if(frame && [_text.delegate respondsToSelector:@selector(styledLinkNodeWasTouched:)]) {
+			  [_text.delegate styledLinkNodeWasTouched:(TTStyledLinkNode*) affectFrame.element];
 		  }
 	  }
 
