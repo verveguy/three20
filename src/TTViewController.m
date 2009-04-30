@@ -54,26 +54,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
-- (id)init {
-  if (self = [super init]) {  
-    _frozenState = nil;
-    _viewState = TTViewEmpty;
-    _contentError = nil;
-    _navigationBarStyle = UIBarStyleDefault;
-    _navigationBarTintColor = nil;
-    _statusBarStyle = UIStatusBarStyleDefault;
-    _invalidView = YES;
-    _invalidViewLoading = NO;
-    _invalidViewData = YES;
-    _validating = NO;
-    _appearing = NO;
-    _appeared = NO;
-    _unloaded = NO;
-    _autoresizesForKeyboard = NO;
-    
-    self.navigationBarTintColor = TTSTYLEVAR(navigationBarTintColor);
-  }
-  return self;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		_frozenState = nil;
+		_viewState = TTViewEmpty;
+		_contentError = nil;
+		_navigationBarStyle = UIBarStyleDefault;
+		_navigationBarTintColor = nil;
+		_statusBarStyle = UIStatusBarStyleDefault;
+		_invalidView = YES;
+		_invalidViewLoading = NO;
+		_invalidViewData = YES;
+		_validating = NO;
+		_appearing = NO;
+		_appeared = NO;
+		_unloaded = NO;
+		_autoresizesForKeyboard = NO;
+		
+		self.navigationBarTintColor = TTSTYLEVAR(navigationBarTintColor);
+	}
+	return self;
 }
 
 - (void)awakeFromNib {
