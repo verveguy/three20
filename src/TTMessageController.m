@@ -287,7 +287,7 @@
   }
 
   if (self.messageRequired) {
-    compliant &= _textEditor.text.length;
+    compliant = compliant && _textEditor.text.length > 0;
   }
 
   _navigationBar.topItem.rightBarButtonItem.enabled = compliant;
