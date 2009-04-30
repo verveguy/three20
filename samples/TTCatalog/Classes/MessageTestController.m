@@ -27,6 +27,11 @@
     initWithRecipients:[NSArray arrayWithObject:recipient]] autorelease];
   controller.dataSource = _dataSource;
   controller.delegate = self;
+  
+  NSMutableArray *fields = [controller.fields mutableCopy];
+  [fields addObject:[[[TTMessageDateField alloc] initWithTitle:@"Send on:" required:YES] autorelease]];
+  controller.fields = fields;
+  
   [self presentModalViewController:controller animated:YES];
 }
 
