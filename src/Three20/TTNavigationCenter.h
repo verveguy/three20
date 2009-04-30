@@ -54,7 +54,10 @@ typedef enum {
 
 - (void)addView:(NSString*)viewType target:(id)target action:(SEL)action;
 - (void)addView:(NSString*)viewType controller:(Class)cls;
+- (void)addView:(NSString*)viewType controller:(Class)cls nibFile:(NSString*)nib;
 - (void)addView:(NSString*)viewType controller:(Class)cls rule:(TTNavigationRule)rule;
+- (void)addView:(NSString*)viewType controller:(Class)cls rule:(TTNavigationRule)rule nibFile:(NSString*)nib;
+
 - (void)removeView:(NSString*)name;
 
 - (void)addObjectLoader:(Class)cls name:(NSString*)name;
