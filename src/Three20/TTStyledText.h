@@ -143,6 +143,6 @@
 @optional
 
 - (void)styledTextNeedsDisplay:(TTStyledText*)text;
-- (void)styledLinkNodeTouched:(TTStyledLinkNode*)link;
+- (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link;
 
 @end
