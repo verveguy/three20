@@ -276,7 +276,10 @@ static CGFloat kTextViewInset = 19;
   if (!_overflowed) {
     _textView.contentOffset = CGPointMake(0, 0);
   }
-  _placeholderLabel.frame = CGRectMake(kPaddingX, 0, self.width-kPaddingX*2, self.height);
+  CGRect textFrame = CGRectMake(kPaddingX, kPaddingY, self.width-kPaddingX*2, self.height);
+  CGSize placeholderSize = [_placeholderLabel sizeThatFits:textFrame.size];
+  _placeholderLabel.frame = CGRectMake(textFrame.origin.x, textFrame.origin.y,
+                                       textFrame.size.width, placeholderSize.height);
     
   if (_fixedTextLabel) {
     [_fixedTextLabel sizeToFit];
