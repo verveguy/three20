@@ -450,6 +450,10 @@ typedef enum {
     }
     
     if (fieldView) {
+      if ([_delegate respondsToSelector:@selector(composeController:willDisplayView:forField:)]) {
+        [_delegate composeController:self willDisplayView:fieldView forField:field];
+      }
+      
       [_scrollView addSubview:fieldView];
       [_fieldViews addObject:fieldView];
 
