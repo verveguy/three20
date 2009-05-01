@@ -196,6 +196,11 @@ static CGFloat kMinCursorWidth = 50;
   } else {
     CGRect frame = CGRectOffset(bounds, _cursorOrigin.x, _cursorOrigin.y);
     frame.size.width -= (_cursorOrigin.x + kPaddingX + (self.rightView ? kClearButtonSize : 0));
+    
+    CGFloat lineHeight = [@"M" sizeWithFont:self.font].height;
+    CGFloat lineSpacing = kCellPaddingY*2 + kSpacingY;
+
+    frame.size.height = lineHeight*self.lineCount + lineSpacing*(self.lineCount ? self.lineCount-1 : 0);
     return frame;
   }
 }
