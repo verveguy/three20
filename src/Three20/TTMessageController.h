@@ -33,6 +33,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@class TTMessageField;
+
 @protocol TTMessageControllerDelegate <NSObject>
 
 @optional
@@ -42,6 +44,9 @@
 - (void)composeControllerDidCancel:(TTMessageController*)controller;
 
 - (void)composeControllerShowRecipientPicker:(TTMessageController*)controller;
+
+- (void)composeController:(TTMessageController*)controller willDisplayView:(UIView*)fieldView
+                 forField:(TTMessageField*)field;
 
 @end
 

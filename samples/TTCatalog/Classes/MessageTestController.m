@@ -107,6 +107,11 @@
   [controller presentModalViewController:navController animated:YES];
 }
 
+- (void)composeController:(TTMessageController*)controller willDisplayView:(UIView*)fieldView
+                 forField:(TTMessageField*)field {
+  TTLOG(@"%s (%@, %@, %@)", __PRETTY_FUNCTION__, controller, fieldView, field);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // SearchTestControllerDelegate
 
