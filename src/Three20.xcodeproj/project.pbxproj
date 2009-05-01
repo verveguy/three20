@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		91552D5F0FAB636100F4578C /* TTDateField.m in Sources */ = {isa = PBXBuildFile; fileRef = 91552D5D0FAB636100F4578C /* TTDateField.m */; };
+		91552D630FAB648100F4578C /* TTDateField.h in Headers */ = {isa = PBXBuildFile; fileRef = 91552D620FAB648100F4578C /* TTDateField.h */; };
 		BE1288060F896A0A00F65EA2 /* TTStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = BE1288050F896A0A00F65EA2 /* TTStyle.h */; };
 		BE1288080F896A1900F65EA2 /* TTStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = BE1288070F896A1900F65EA2 /* TTStyle.m */; };
 		BE1288CB0F89812E00F65EA2 /* TTShape.m in Sources */ = {isa = PBXBuildFile; fileRef = BE1288CA0F89812E00F65EA2 /* TTShape.m */; };
@@ -139,6 +141,8 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		91552D5D0FAB636100F4578C /* TTDateField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTDateField.m; sourceTree = "<group>"; };
+		91552D620FAB648100F4578C /* TTDateField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTDateField.h; path = Three20/TTDateField.h; sourceTree = "<group>"; };
 		BE1288050F896A0A00F65EA2 /* TTStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTStyle.h; path = Three20/TTStyle.h; sourceTree = "<group>"; };
 		BE1288070F896A1900F65EA2 /* TTStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTStyle.m; sourceTree = "<group>"; };
 		BE1288CA0F89812E00F65EA2 /* TTShape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTShape.m; sourceTree = "<group>"; };
@@ -462,6 +466,8 @@
 				BEE341A50F480BA2008C826E /* TTPickerTextField.m */,
 				BEE3476D0F48F5F6008C826E /* TTSearchBar.h */,
 				BEE3476F0F48F604008C826E /* TTSearchBar.m */,
+				91552D620FAB648100F4578C /* TTDateField.h */,
+				91552D5D0FAB636100F4578C /* TTDateField.m */,
 			);
 			name = "Text Fields";
 			sourceTree = "<group>";
@@ -612,6 +618,7 @@
 				BE8541010F998FA900DA3E9E /* TTStyledFrame.h in Headers */,
 				BE1942770F9ACE85005F4EFC /* TTStyledLayout.h in Headers */,
 				BEB210D40FA3E784007DEE5F /* NSStringAdditions.h in Headers */,
+				91552D630FAB648100F4578C /* TTDateField.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,6 +724,7 @@
 				BE8541030F998FB800DA3E9E /* TTStyledFrame.m in Sources */,
 				BE1942880F9ACEA7005F4EFC /* TTStyledLayout.m in Sources */,
 				BEB210D20FA3E77E007DEE5F /* NSStringAdditions.m in Sources */,
+				91552D5F0FAB636100F4578C /* TTDateField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
