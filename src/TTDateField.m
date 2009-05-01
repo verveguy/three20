@@ -1,5 +1,5 @@
 #import "Three20/TTDateField.h"
-#import "Three20/TTStyleSheet.h"
+#import "Three20/TTDefaultStyleSheet.h"
 #import "Three20/TTGlobal.h"
 
 @implementation TTDateField
