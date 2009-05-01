@@ -183,11 +183,11 @@ typedef enum {
 - (UIView *)keyboardView {
   for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
     for (UIView *view in [window subviews]) {
-      if ([[view description] hasPrefix:@"<UIKeyboard"]) {
+      NSString *viewClassName = NSStringFromClass([view class]);
+      if ([viewClassName isEqual:@"UIKeyboard"]) {
         return view;
       }
     }
-    
   }
   return nil;
 }
