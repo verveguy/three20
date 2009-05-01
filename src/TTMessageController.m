@@ -121,10 +121,11 @@ typedef enum {
   TTDateFieldModeDateAndTime
 } TTDateFieldMode;
 
-@interface TTDateField : UIControl {
+@interface TTDateField : UIControl<UITextFieldDelegate> {
   TTDateFieldMode _dateFieldMode;
   NSDateFormatter *_formatter;
   UIDatePicker *_pickerView;
+  TTPickerTextField *_helperField;
   UILabel *_valueLabel;
   UIView *_leftView;
 }
@@ -149,10 +150,23 @@ typedef enum {
   if (self = [super initWithFrame:frame]) {
     _formatter = [NSDateFormatter new];
     [_formatter setDateStyle:NSDateFormatterMediumStyle];
+    
+    _helperField = [[TTPickerTextField alloc] initWithFrame:frame];
+    [self addSubview:_helperField];
+    _helperField.delegate = self;
+    _helperField.leftViewMode = UITextFieldViewModeAlways;
+    _helperField.font = TTSTYLEVAR(messageFont);
+    _helperField.backgroundColor = TTSTYLEVAR(backgroundColor);
+    
     self.valueLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-    self.valueLabel.font = TTSTYLEVAR(messageFont);
+    self.valueLabel.backgroundColor = _helperField.backgroundColor;
+    self.valueLabel.font = _helperField.font;
+    self.valueLabel.opaque = YES;
+    self.valueLabel.hidden = YES;
+    self.valueLabel.userInteractionEnabled = YES;
+    [_helperField addSubview:self.valueLabel];
+    
     self.date = [NSDate date];
-    self.userInteractionEnabled = YES;
   }
   return self;
 }
@@ -161,33 +175,31 @@ typedef enum {
   [_formatter release], _formatter = nil;
   [_pickerView release], _pickerView = nil;
   [_valueLabel release], _valueLabel = nil;
+  [_helperField release], _helperField = nil;
   [_leftView release], _leftView = nil;
   [super dealloc];
 }
 
+- (UIView *)keyboardView {
+  for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+    for (UIView *view in [window subviews]) {
+      if ([[view description] hasPrefix:@"<UIKeyboard"]) {
+        return view;
+      }
+    }
+    
+  }
+  return nil;
+}
+
 - (UIDatePicker *)pickerView {
   if (_pickerView == nil) {
-    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-    CGRect frame = keyWindow.frame;
-    frame.origin.y = frame.size.height - KEYBOARD_HEIGHT;
-    frame.size.height = KEYBOARD_HEIGHT;
-    _pickerView = [[UIDatePicker alloc] initWithFrame:frame];
+    _pickerView = [[UIDatePicker alloc] initWithFrame:CGRectZero];
     _pickerView.hidden = YES;
     [_pickerView addTarget:self action:@selector(dateChanged) forControlEvents:UIControlEventValueChanged];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
-        name:UIKeyboardWillShowNotification object:nil];
-    
-    [keyWindow addSubview:_pickerView];
   }
   return _pickerView;
 }
-
-- (void)keyboardWillShow {
-  [UIView beginAnimations:@"disableKeyboardSlideIn" context:nil];
-  [UIView setAnimationsEnabled:NO];
-}
-  
 
 - (NSDate *)date {
   return self.pickerView.date;
@@ -197,11 +209,13 @@ typedef enum {
   if (date) {
     self.pickerView.date = date;
     self.valueLabel.text = [self.formatter stringFromDate:date];
+    _helperField.text = [self.formatter stringFromDate:date];
   }
 }
 
 - (void)dateChanged {
   self.valueLabel.text = [self.formatter stringFromDate:self.date];
+  _helperField.text = [self.formatter stringFromDate:self.date];
 }
 
 - (void)setDateFieldMode:(TTDateFieldMode)dateFieldMode {
@@ -227,10 +241,8 @@ typedef enum {
 }
 
 - (void)setLeftView:(UIView *)leftView {
-  if (leftView != _leftView) {
-    [_leftView removeFromSuperview];
-    [self addSubview:leftView];
-    _leftView = leftView;
+  if (leftView != _helperField.leftView) {
+    _helperField.leftView = leftView;
   }
 }
 
@@ -242,50 +254,31 @@ typedef enum {
   }
 }
 
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
-
-- (BOOL)becomeFirstResponder {
-  _pickerView.hidden = NO;
-  [UIView beginAnimations:@"disableKeyboardSlideOut" context:nil];
-  [UIView setAnimationsEnabled:NO];
-  BOOL returnVal = [super becomeFirstResponder];
-  [UIView commitAnimations];
-  [UIView setAnimationsEnabled:YES];
-  return returnVal;
-}
-
-- (BOOL)canResignFirstResponder {
-  return YES;
-}
-
-- (BOOL)resignFirstResponder {
-  _pickerView.hidden = YES;
-  BOOL returnVal = [super resignFirstResponder];
-  [UIView commitAnimations];
-  [UIView setAnimationsEnabled:YES];
-  return returnVal;
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-  [self becomeFirstResponder];
-}
-
-- (void)sizeToFit {
-  [_valueLabel sizeToFit];
-  self.frame = CGRectInset(_valueLabel.frame, 0, -6);
-}
-
-- (void)layoutSubviews {
-  CGRect labelFrame = self.bounds;
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+  UIView *keyboardView = [self keyboardView];
+  self.pickerView.hidden = NO;
+  [keyboardView addSubview:self.pickerView];
   
-  if (self.leftView) {
-    labelFrame.size.width -= CGRectGetMaxX(self.leftView.frame);
-    labelFrame.origin.x = CGRectGetMaxX(self.leftView.frame) + 1;
-  }
+  self.valueLabel.hidden = NO;
+  self.valueLabel.font = _helperField.font;
+  [_helperField bringSubviewToFront:self.valueLabel];
+  [self setNeedsLayout];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+  self.pickerView.hidden = YES;
+  [self.pickerView removeFromSuperview];
   
-  self.valueLabel.frame = labelFrame;
+  self.valueLabel.hidden = YES;
+}
+
+- (CGSize)sizeThatFits:(CGSize)size {
+  return [_helperField sizeThatFits:size];
+}
+
+- (void)layoutSubviews {  
+  _helperField.frame = self.bounds;
+  self.valueLabel.frame = [_helperField editingRectForBounds:_helperField.bounds];
 }
 
 @end
