@@ -110,6 +110,9 @@
 - (void)composeController:(TTMessageController*)controller willDisplayView:(UIView*)fieldView
                  forField:(TTMessageField*)field {
   TTLOG(@"%s (%@, %@, %@)", __PRETTY_FUNCTION__, controller, fieldView, field);
+  if (field == nil) {  // Message field
+    [(TTTextEditor*)fieldView setPlaceholder:@"Write your message here."];
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
