@@ -1,10 +1,11 @@
 #import "Three20/TTURLRequest.h"
 
-@protocol TTStyledTextDelegate;
+@protocol TTStyledTextDelegate,TTStyledTextTouchDelegate;
 @class TTStyledNode, TTStyledFrame, TTStyledBoxFrame, TTStyledLinkNode;
 
 @interface TTStyledText : NSObject <TTURLRequestDelegate> {
   id<TTStyledTextDelegate> _delegate;
+  id<TTStyledTextTouchDelegate> _touchDelegate;
   TTStyledNode* _rootNode;
   TTStyledFrame* _rootFrame;
   UIFont* _font;
@@ -15,6 +16,11 @@
 }
 
 @property(nonatomic,assign) id<TTStyledTextDelegate> delegate;
+
+/**
+ * Calls back for user events to the application layer
+ **/
+@property(nonatomic,assign) id<TTStyledTextTouchDelegate> touchDelegate;
 
 /**
  * The first in the sequence of nodes that contain the styled text.
@@ -143,6 +149,13 @@
 @optional
 
 - (void)styledTextNeedsDisplay:(TTStyledText*)text;
+
+@end
+
+@protocol TTStyledTextTouchDelegate <NSObject>
+
+@optional
+
 - (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link;
 
 @end

@@ -117,8 +117,8 @@ static const CGFloat kCancelHighlightThreshold = 4;
 			  className = @"linkText:";
 		  }
 		  
-		  if(frame && [_text.delegate respondsToSelector:@selector(styledLinkNodeWasTouched:)]) {
-			  [_text.delegate styledLinkNodeWasTouched:(TTStyledLinkNode*) affectFrame.element];
+		  if(frame && [_text.touchDelegate respondsToSelector:@selector(styledLinkNodeWasTouched:)]) {
+			  [_text.touchDelegate styledLinkNodeWasTouched:(TTStyledLinkNode*) affectFrame.element];
 		  }
 	  }
 
@@ -185,6 +185,8 @@ static const CGFloat kCancelHighlightThreshold = 4;
   [self setNeedsDisplay];
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTStyledTextTouchDelegate
 - (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link {
 	[[[[UIAlertView alloc] initWithTitle:@"Link Touched" 
 								message:[NSString stringWithFormat:@"Open this URL in Safari? %@. ",link.url]
@@ -213,6 +215,9 @@ static const CGFloat kCancelHighlightThreshold = 4;
     [_text release];
     _text = [text retain];
     _text.delegate = self;
+    if(_text.touchDelegate == nil) {
+      _text.touchDelegate = self;
+    }
     _text.font = _font;
     [self setNeedsDisplay];
   }

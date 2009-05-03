@@ -5,7 +5,7 @@
 /**
  * A view that can display styled text.
  */
-@interface TTStyledTextLabel : UIView <TTStyledTextDelegate> {
+@interface TTStyledTextLabel : UIView <TTStyledTextDelegate,TTStyledTextTouchDelegate> {
   TTStyledText* _text;
   UIFont* _font;
   UIColor* _textColor;

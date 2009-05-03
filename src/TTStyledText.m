@@ -11,7 +11,7 @@
 
 @implementation TTStyledText
 
-@synthesize delegate = _delegate, rootNode = _rootNode, font = _font, width = _width,
+@synthesize delegate = _delegate, touchDelegate = _touchDelegate, rootNode = _rootNode, font = _font, width = _width,
             height = _height, invalidImages = _invalidImages;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
