@@ -43,6 +43,7 @@ static const CGFloat kCancelHighlightThreshold = 4;
     _highlightedFrame = nil;
     
     self.font = TTSTYLEVAR(font);
+    self.textColor = TTSTYLEVAR(textColor);
     self.backgroundColor = TTSTYLEVAR(backgroundColor);
     self.contentMode = UIViewContentModeRedraw;
     self.opaque = YES;
