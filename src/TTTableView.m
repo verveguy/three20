@@ -37,6 +37,7 @@ static const CGFloat kCancelHighlightThreshold = 4;
     
     self.delaysContentTouches = NO;
     self.separatorColor = TTSTYLEVAR(tableSeparatorColor);
+    self.backgroundColor = TTSTYLEVAR(tableBackgroundColor);
   }
   return self;
 }
