@@ -43,6 +43,7 @@
   _sendTimer = nil;
   
   NSArray* fields = timer.userInfo;
+  NSLog(@"Sending fields: %@", fields);
   UIView* lastView = [self.view.subviews lastObject];
   CGFloat y = lastView.bottom + 20;
   
