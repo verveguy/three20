@@ -572,6 +572,8 @@ typedef enum {
   
   UIView* firstTextField = [_fieldViews objectAtIndex:0];
   [firstTextField becomeFirstResponder];
+  
+  [self updateSendCommand];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
