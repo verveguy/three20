@@ -107,6 +107,10 @@
 
 @synthesize date = _date;
 
+- (NSString*)description {
+  return [NSString stringWithFormat:@"%@ %@", _title, _date];
+}
+
 - (void)dealloc {
     [_date release];
     [super dealloc];
@@ -178,6 +182,9 @@
       } else if ([field isKindOfClass:[TTMessageTextField class]]) {
         UITextField* textField = [_fieldViews objectAtIndex:i];
         [(TTMessageTextField*)field setText:textField.text];
+      } else if ([field isKindOfClass:[TTMessageDateField class]]) {
+        TTDateField *dateField = [_fieldViews objectAtIndex:i];
+        [(TTMessageDateField*)field setDate:dateField.date];
       }
     }
     
