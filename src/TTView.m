@@ -11,6 +11,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
+- (id)initWithCoder:(NSCoder *)decoder {
+  if (self = [super initWithCoder:decoder]) {
+    _style = nil;
+    _layout = nil;
+    // Avoid fixing content mode here, because it will be specified in XIB
+  }
+  return self;
+}
+
 - (id)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     _style = nil;
