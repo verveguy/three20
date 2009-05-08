@@ -267,6 +267,7 @@
 		BEF31F6F0F352E64000DE5D2 /* Three20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Three20.h; path = Three20/Three20.h; sourceTree = "<group>"; };
 		BEF341940F8042440027E93C /* TTStyledTextLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTStyledTextLabel.m; sourceTree = "<group>"; };
 		BEF341960F8042520027E93C /* TTStyledTextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTStyledTextLabel.h; path = Three20/TTStyledTextLabel.h; sourceTree = "<group>"; };
+		E41BACBC0FB08D3C0022E416 /* Three20.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Three20.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -300,7 +301,7 @@
 				BEB46A860F8F8170004B34A0 /* Layout */,
 				BEB46A870F8F818F004B34A0 /* Styled Text */,
 				BEF321B30F353B78000DE5D2 /* View Controllers */,
-				BEF31F450F352E64000DE5D2 /* Views */,
+				BEF31F450F352E64000DE5D2 /* Three20 */,
 				BEB460380F8EDE60004B34A0 /* Labels */,
 				BED631A10F88554F009923D8 /* Buttons and Tabs */,
 				BEE341A40F480B91008C826E /* Text Fields */,
@@ -309,6 +310,7 @@
 				BEF321B00F353B15000DE5D2 /* Network */,
 				BEB4603C0F8EDEFD004B34A0 /* Helper Views */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				E41BACB90FB08D1D0022E416 /* Resources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				BEB463DC0F8F2DB5004B34A0 /* developer.h */,
 			);
@@ -470,7 +472,7 @@
 			name = "Text Fields";
 			sourceTree = "<group>";
 		};
-		BEF31F450F352E64000DE5D2 /* Views */ = {
+		BEF31F450F352E64000DE5D2 /* Three20 */ = {
 			isa = PBXGroup;
 			children = (
 				BEF31F5F0F352E64000DE5D2 /* TTView.h */,
@@ -482,9 +484,8 @@
 				BEF31F630F352E64000DE5D2 /* TTScrollView.h */,
 				BEF31F4D0F352E64000DE5D2 /* TTScrollView.m */,
 			);
-			name = Views;
-			path = ../src;
-			sourceTree = SOURCE_ROOT;
+			name = Three20;
+			sourceTree = "<group>";
 		};
 		BEF321B00F353B15000DE5D2 /* Network */ = {
 			isa = PBXGroup;
@@ -546,6 +547,14 @@
 				BEA69ECA0FAC0FD600DA7DDC /* TTWebController.m */,
 			);
 			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		E41BACB90FB08D1D0022E416 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E41BACBC0FB08D3C0022E416 /* Three20.bundle */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
