@@ -263,7 +263,7 @@ static CGFloat kDefaultIconSize = 50;
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _titleLabel.font = TTSTYLEVAR(tableTitleFont);
-    _titleLabel.textColor = TTSTYLEVAR(linkTextColor);
+    _titleLabel.textColor = TTSTYLEVAR(tableTitleTextColor);
     _titleLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
     _titleLabel.textAlignment = UITextAlignmentRight;
     [self.contentView addSubview:_titleLabel];
