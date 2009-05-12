@@ -250,12 +250,15 @@ static CGFloat kDefaultIconSize = 50;
   CGFloat maxWidth = tableView.width - (kKeyWidth + kKeySpacing + kHPadding*2 + kMargin*2);
   TTTitledTableField* field = item;
 
-  CGSize size = [field.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
+  CGSize contentSize = [field.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
     constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
     lineBreakMode:UILineBreakModeWordWrap];
   
-  return size.height + kVPadding*2;
-
+  CGSize titleSize = [field.title sizeWithFont:TTSTYLEVAR(tableTitleFont)
+                      constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
+                      lineBreakMode:UILineBreakModeTailTruncation];
+  
+  return MAX(contentSize.height, titleSize.height) + kVPadding*2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
