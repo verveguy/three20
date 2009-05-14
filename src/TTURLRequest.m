@@ -107,7 +107,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   }
 }
 
-- (NSData*)generatePostBody {
+- (NSData*)generateMultipartPostBody {
   NSMutableData *body = [NSMutableData data];
   NSString *endLine = [NSString stringWithFormat:@"\r\n--%@\r\n", kStringBoundary];
 
@@ -155,7 +155,29 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
     [_parameters removeObjectForKey:imageKey];
   }
 
-  //TTLOG(@"Sending %s", [body bytes]);
+  return body;
+}
+
+- (NSData*)generateUrlencodedPostBody {
+  NSMutableData *body = [NSMutableData data];
+
+  for (id key in [_parameters keyEnumerator]) {
+    NSString* value = [_parameters objectForKey:key];
+    [body appendData:[[NSString
+                        stringWithFormat:@"%@=%@&", key, value]
+                        dataUsingEncoding:NSUTF8StringEncoding]];
+  }
+
+  return body;
+}
+
+- (NSData*)generatePostBody {
+  NSData *body = nil;
+  if ([[self contentType] isEqualToString:@"application/x-www-form-urlencoded"])
+    body = [self generateUrlencodedPostBody];
+  else
+    body = [self generateMultipartPostBody];
+  
   return body;
 }
 
