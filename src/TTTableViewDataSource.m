@@ -230,17 +230,14 @@
 // NSObject
 
 - (id)initWithItems:(NSArray*)items {
-  if (self = [self init]) {
+  if (self = [super init]) {
     _items = [items mutableCopy];
   }
   return self;
 }
 
 - (id)init {
-  if (self = [super init]) {
-    _items = nil;
-  }
-  return self;
+  return [self initWithItems:[NSArray array]];
 }
 
 - (void)dealloc {
@@ -340,7 +337,7 @@
 // NSObject
 
 - (id)initWithItems:(NSArray*)items sections:(NSArray*)sections {
-  if (self = [self init]) {
+  if (self = [super init]) {
     _items = [items mutableCopy];
     _sections = [sections mutableCopy];
   }
@@ -348,11 +345,7 @@
 }
 
 - (id)init {
-  if (self = [super init]) {
-    _items = nil;
-    _sections = nil;
-  }
-  return self;
+  return [self initWithItems:[NSArray array] sections:[NSArray array]];
 }
 
 - (void)dealloc {
