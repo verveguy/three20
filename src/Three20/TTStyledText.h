@@ -156,6 +156,11 @@
 
 @optional
 
+/** Fires whenver a link node is touched **/
 - (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link;
+
+/** Fires whenever _any_ styled node is touched. Probably not universally interesting **/
+- (void)styledNodeWasTouched:(TTStyledNode*)node;
+
 
 @end

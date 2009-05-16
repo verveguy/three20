@@ -122,7 +122,10 @@ static const CGFloat kCancelHighlightThreshold = 4;
 		  }
 	  }
 
-    
+    if(frame && [_text.touchDelegate respondsToSelector:@selector(styledNodeWasTouched:)]) {
+      [_text.touchDelegate styledNodeWasTouched:(TTStyledNode*)affectFrame.element];
+    }
+	  
     if (className && [className rangeOfString:@":"].location != NSNotFound) {
       if (frame) {
         TTStyle* style = [TTSTYLESHEET styleWithSelector:className
@@ -193,6 +196,10 @@ static const CGFloat kCancelHighlightThreshold = 4;
 							   delegate:self 
 					  cancelButtonTitle:@"Cancel" 
 					  otherButtonTitles:@"Open",nil] autorelease] show];	
+}
+
+- (void)styledNodeWasTouched:(TTStyledNode*)node {
+	NSLog(@"default impl some styled node was touched.");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
