@@ -112,11 +112,7 @@ static const CGFloat kMaxCaptionHeight = 100;
 }
 
 - (void)imageViewDidFailLoadWithError:(NSError*)error {
-  if (self.url == [_photo urlForVersion:TTPhotoVersionLarge]) {
-    [self showStatus:TTLocalizedString(@"This photo is not available.", @"")];
-  } else {
-    [self showProgress:0];
-  }
+  [self showStatus:TTLocalizedString(@"This photo is not available.", @"")];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
