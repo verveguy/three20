@@ -1,8 +1,8 @@
 #import "Three20/TTStyledTextLabel.h"
-#import "Three20/TTStyledTextNode.h"
+#import "Three20/TTStyledNode.h"
+#import "Three20/TTStyledFrame.h"
 #import "Three20/TTStyledText.h"
 #import "Three20/TTDefaultStyleSheet.h"
-#import "Three20/TTNavigationCenter.h"
 #import "Three20/TTTableView.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +40,7 @@ static const CGFloat kCancelHighlightThreshold = 4;
     _contentInset = UIEdgeInsetsZero;
     _highlighted = NO;
     _highlightedNode = nil;
+    _highlightedFrame = nil;
     
     self.font = TTSTYLEVAR(font);
     self.backgroundColor = TTSTYLEVAR(backgroundColor);
@@ -50,11 +51,13 @@ static const CGFloat kCancelHighlightThreshold = 4;
 }
 
 - (void)dealloc {
+  _text.delegate = nil;
   [_text release];
   [_font release];
   [_textColor release];
   [_highlightedTextColor release];
   [_highlightedNode release];
+  [_highlightedFrame release];
   [super dealloc];
 }
 
@@ -63,9 +66,9 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (void)drawRect:(CGRect)rect {
   if (_highlighted) {
-    [_highlightedTextColor setFill];
+    [self.highlightedTextColor setFill];
   } else {
-    [_textColor setFill];
+    [self.textColor setFill];
   }
   
   CGPoint origin = CGPointMake(rect.origin.x + _contentInset.left,
@@ -80,7 +83,6 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (CGSize)sizeThatFits:(CGSize)size {
   [self layoutIfNeeded];
-  //_text.width = size.width + (_contentInset.left + _contentInset.right);
   return CGSizeMake(_text.width + (_contentInset.left + _contentInset.right),
                     _text.height+ (_contentInset.top + _contentInset.bottom));
 }
@@ -88,34 +90,91 @@ static const CGFloat kCancelHighlightThreshold = 4;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UIResponder
 
+- (void)setStyle:(TTStyle*)style forFrame:(TTStyledBoxFrame*)frame {
+  if ([frame isKindOfClass:[TTStyledInlineFrame class]]) {
+    TTStyledInlineFrame* inlineFrame = (TTStyledInlineFrame*)frame;
+    while (inlineFrame.inlinePreviousFrame) {
+      inlineFrame = inlineFrame.inlinePreviousFrame;
+    }
+    while (inlineFrame) {
+      inlineFrame.style = style;
+      inlineFrame = inlineFrame.inlineNextFrame;
+    }
+  } else {
+    frame.style = style;
+  }
+}
+
+- (void)setHighlightedFrame:(TTStyledBoxFrame*)frame{
+  if (frame != _highlightedFrame) {
+    TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
+    
+    TTStyledBoxFrame* affectFrame = frame ? frame : _highlightedFrame;
+    NSString* className = affectFrame.element.className;
+    if (!className && [affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+      className = @"linkText:";
+    }
+    
+    if (className && [className rangeOfString:@":"].location != NSNotFound) {
+      if (frame) {
+        TTStyle* style = [TTSTYLESHEET styleWithSelector:className
+                                       forState:UIControlStateHighlighted];
+        [self setStyle:style forFrame:frame];
+        
+        [_highlightedFrame release];
+        _highlightedFrame = [frame retain];
+        [_highlightedNode release];
+        _highlightedNode = [frame.element retain];
+        tableView.highlightedLabel = self;
+      } else {
+        TTStyle* style = [TTSTYLESHEET styleWithSelector:className forState:UIControlStateNormal];
+        [self setStyle:style forFrame:_highlightedFrame];
+
+        [_highlightedFrame release];
+        _highlightedFrame = nil;
+        [_highlightedNode release];
+        _highlightedNode = nil;
+        tableView.highlightedLabel = nil;
+      }
+
+      [self setNeedsDisplay];
+    }
+  }
+}
+
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
   UITouch* touch = [touches anyObject];
   CGPoint point = [touch locationInView:self];
   point.x -= _contentInset.left;
   point.y -= _contentInset.top;
   
-  TTStyledTextFrame* frame = [_text hitTest:point];
-  if (frame && [frame.node isKindOfClass:[TTStyledLinkNode class]]) {
-    self.highlightedNode = (TTStyledLinkNode*)frame.node;
-    
-    TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
-    if (tableView) {
-      tableView.highlightedLabel = self;
-    }
+  TTStyledBoxFrame* frame = [_text hitTest:point];
+  if (frame) {
+    [self setHighlightedFrame:frame];
   }
+  
+  [super touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-  if (_highlightedNode) {
-    [[TTNavigationCenter defaultCenter] displayURL:_highlightedNode.url];
-    
-    self.highlightedNode = nil;
-
-    TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
-    if (tableView) {
-      tableView.highlightedLabel = nil;
+  TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
+  if (!tableView) {
+    if (_highlightedNode) {
+      [_highlightedNode performDefaultAction];    
+      [self setHighlightedFrame:nil];
     }
+    
+    // We definitely don't want to call this if the label is inside a TTTableView, because
+    // it winds up calling touchesEnded on the table twice, triggering the link twice
+    [super touchesEnded:touches withEvent:event];
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTStyledTextDelegate
+
+- (void)styledTextNeedsDisplay:(TTStyledText*)text {
+  [self setNeedsDisplay];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,8 +182,10 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (void)setText:(TTStyledText*)text {
   if (text != _text) {
+    _text.delegate = nil;
     [_text release];
     _text = [text retain];
+    _text.delegate = self;
     _text.font = _font;
     [self setNeedsDisplay];
   }
@@ -161,14 +222,15 @@ static const CGFloat kCancelHighlightThreshold = 4;
   return _highlightedTextColor;
 }
 
-- (void)setHighlightedNode:(TTStyledLinkNode*)highlightedNode {
-  if (highlightedNode != _highlightedNode) {
-    _highlightedNode.highlighted = NO;
-    [_highlightedNode release];
-    _highlightedNode = [highlightedNode retain];
-    _highlightedNode.highlighted = YES;
-    [self setNeedsDisplay];
-  }
+- (void)setHighlightedNode:(TTStyledElement*)node {
+  if (node != _highlightedNode) {
+    if (!node) {
+      [self setHighlightedFrame:nil];
+    } else {
+      [_highlightedNode release];
+      _highlightedNode = [node retain];
+    }
+  }  
 }
 
 @end

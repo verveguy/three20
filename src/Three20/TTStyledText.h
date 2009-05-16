@@ -1,24 +1,30 @@
-#import "Three20/TTStyle.h"
+#import "Three20/TTURLRequest.h"
 
-@class TTStyledTextNode, TTStyledTextFrame, TTStyledTextNode;
+@protocol TTStyledTextDelegate;
+@class TTStyledNode, TTStyledFrame, TTStyledBoxFrame;
 
-@interface TTStyledText : NSObject {
-  TTStyledTextNode* _rootNode;
-  TTStyledTextFrame* _rootFrame;
+@interface TTStyledText : NSObject <TTURLRequestDelegate> {
+  id<TTStyledTextDelegate> _delegate;
+  TTStyledNode* _rootNode;
+  TTStyledFrame* _rootFrame;
   UIFont* _font;
   CGFloat _width;
   CGFloat _height;
+  NSMutableArray* _invalidImages;
+  NSMutableArray* _imageRequests;
 }
+
+@property(nonatomic,assign) id<TTStyledTextDelegate> delegate;
 
 /**
  * The first in the sequence of nodes that contain the styled text.
  */
-@property(nonatomic, retain) TTStyledTextNode* rootNode;
+@property(nonatomic, retain) TTStyledNode* rootNode;
 
 /**
  * The first in the sequence of frames of text calculated by the layout.
  */
-@property(nonatomic, readonly) TTStyledTextFrame* rootFrame;
+@property(nonatomic, readonly) TTStyledFrame* rootFrame;
 
 /**
  * The font that will be used to measure and draw all text.
@@ -38,6 +44,16 @@
 @property(nonatomic, readonly) CGFloat height;
 
 /**
+ * Indicates if the text needs layout to recalculate its size.
+ */
+@property(nonatomic, readonly) BOOL needsLayout;
+
+/**
+ * Images that require loading 
+ */
+@property(nonatomic, readonly) NSMutableArray* invalidImages;
+
+/**
  * Constructs styled text with XHTML tags turned into style nodes.
  *
  * Only the following XHTML tags are supported: <b>, <i>, <img>, <a>.  The source must
@@ -45,6 +61,7 @@
  * it can be any string with XHTML tags throughout.
  */
 + (TTStyledText*)textFromXHTML:(NSString*)source;
++ (TTStyledText*)textFromXHTML:(NSString*)source lineBreaks:(BOOL)lineBreaks urls:(BOOL)urls;
 
 /**
  * Constructs styled text with all URLs transformed into links.
@@ -52,8 +69,19 @@
  * Only URLs are parsed, not HTML markup. URLs are turned into links.
  */ 
 + (TTStyledText*)textWithURLs:(NSString*)source;
++ (TTStyledText*)textWithURLs:(NSString*)source lineBreaks:(BOOL)lineBreaks;
 
-- (id)initWithNode:(TTStyledTextNode*)rootNode;
+- (id)initWithNode:(TTStyledNode*)rootNode;
+
+/**
+ * 
+ */
+- (void)layoutFrames;
+
+/**
+ * 
+ */
+- (void)layoutIfNeeded;
 
 /**
  * Called to indicate that the layout needs to be re-calculated.
@@ -75,68 +103,45 @@
 /**
  * Determines which frame is intersected by a point.
  */
-- (TTStyledTextFrame*)hitTest:(CGPoint)point;
+- (TTStyledBoxFrame*)hitTest:(CGPoint)point;
+
+/**
+ * Finds the frame that represents the node.
+ *
+ * If multiple frames represent a node, such as an inline frame with line breaks, the
+ * first frame in the sequence will be returned.
+ */
+- (TTStyledFrame*)getFrameForNode:(TTStyledNode*)node;
+
+/**
+ *
+ */
+- (void)addChild:(TTStyledNode*)child;
+
+/**
+ *
+ */
+- (void)addText:(NSString*)text;
+
+/**
+ *
+ */
+- (void)insertChild:(TTStyledNode*)child atIndex:(NSInteger)index;
+
+/**
+ *
+ */
+- (TTStyledNode*)getElementByClassName:(NSString*)className;
 
 @end
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface TTStyledTextFrame : NSObject <TTStyleDelegate> {
-  TTStyledTextNode* _node;
-  TTStyledTextFrame* _nextFrame;
-  TTStyle* _style;
-  NSString* _text;
-  UIFont* _font;
-  CGFloat _width;
-  CGFloat _height;
-  BOOL _lineBreak;
-}
+@protocol TTStyledTextDelegate <NSObject>
 
-/** 
- * The node represented by the frame
- */
-@property(nonatomic, readonly) TTStyledTextNode* node;
+@optional
 
-/**
- * The next in the linked list of frames.
- */
-@property(nonatomic, retain) TTStyledTextFrame* nextFrame;
-
-/**
- * The style used to render the frame;
- */
-@property(nonatomic, retain) TTStyle* style;
-
-/**
- * The text that is displayed by this frame.
- */
-@property(nonatomic, readonly) NSString* text;
-
-/**
- * The font that is used to measure and display the text of this frame.
- */
-@property(nonatomic, retain) UIFont* font;
-
-/**
- * The width of the text that is displayed by this frame.
- */
-@property(nonatomic) CGFloat width;
-
-/**
- * The height of the text that is displayed by this frame.
- */
-@property(nonatomic) CGFloat height;
-
-/**
- * Indicates if the layout will break to a new line after this frame.
- */
-@property(nonatomic) BOOL lineBreak;
-
-- (id)initWithText:(NSString*)text node:(TTStyledTextNode*)node;
-
-/**
- * Draws the frame.
- */
-- (void)drawInRect:(CGRect)rect;
+- (void)styledTextNeedsDisplay:(TTStyledText*)text;
 
 @end

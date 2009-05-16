@@ -1,5 +1,5 @@
 #include "Three20/TTTableField.h"
-#include "Three20/TTStyledTextNode.h"
+#include "Three20/TTStyledNode.h"
 #include "Three20/TTStyledText.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@
 
 @implementation TTTextFieldTableField
 
-@synthesize delegate = _delegate, text = _text, title = _title, placeholder = _placeholder,
+@synthesize delegate = _delegate, title = _title, placeholder = _placeholder,
   returnKeyType = _returnKeyType, keyboardType = _keyboardType,
   autocorrectionType = _autocorrectionType, autocapitalizationType = _autocapitalizationType,
   clearButtonMode = _clearButtonMode, secureTextEntry = _secureTextEntry;
@@ -269,7 +269,6 @@
   if (self = [super init]) {
     _delegate = nil;
     _title = nil;
-    _text = nil;
     _placeholder = nil;
     _returnKeyType = UIReturnKeyDefault;
     _keyboardType = UIKeyboardTypeDefault;
@@ -297,7 +296,6 @@
 
 - (void)dealloc {
   [_title release];
-  [_text release];
   [_placeholder release];
   [super dealloc];
 }
@@ -364,7 +362,7 @@
 
 @implementation TTStyledTextTableField
 
-@synthesize styledText = _styledText;
+@synthesize styledText = _styledText, margin = _margin, padding = _padding;
 
 - (id)initWithStyledText:(TTStyledText*)styledText {
   if (self = [self init]) {
@@ -383,6 +381,8 @@
 - (id)init {
   if (self = [super init]) {
     _styledText = nil;
+    _margin = UIEdgeInsetsZero;
+    _padding = UIEdgeInsetsMake(10, 10, 10, 10);    
   }
   return self;
 }

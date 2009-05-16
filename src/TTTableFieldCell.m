@@ -2,7 +2,7 @@
 #import "Three20/TTTableField.h"
 #import "Three20/TTImageView.h"
 #import "Three20/TTErrorView.h"
-#import "Three20/TTStyledTextNode.h"
+#import "Three20/TTStyledNode.h"
 #import "Three20/TTStyledText.h"
 #import "Three20/TTStyledTextLabel.h"
 #import "Three20/TTActivityLabel.h"
@@ -182,17 +182,15 @@ static CGFloat kDefaultIconSize = 50;
   TTStyledTextTableField* field = item;
   field.styledText.font = TTSTYLEVAR(font);
   
-  CGFloat padding = kHPadding*2;
-  if (tableView.style == UITableViewStyleGrouped) {
-    padding += kGroupMargin*2;
-  }
+  CGFloat padding = tableView.style == UITableViewStyleGrouped ? kGroupMargin*2 : 0;
+  padding += field.padding.left + field.padding.right;
   if (field.url) {
     padding += kDisclosureIndicatorWidth;
   }
   
   field.styledText.width = tableView.width - padding;
   
-  return field.styledText.height + (kVPadding*2);
+  return field.styledText.height + field.padding.top + field.padding.bottom;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +199,6 @@ static CGFloat kDefaultIconSize = 50;
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString*)identifier {
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _label = [[TTStyledTextLabel alloc] initWithFrame:CGRectZero];
-    _label.contentInset = UIEdgeInsetsMake(kVPadding, kHPadding, kVPadding, kHPadding);
     [self.contentView addSubview:_label];
   }
   return self;
@@ -218,7 +215,15 @@ static CGFloat kDefaultIconSize = 50;
 - (void)layoutSubviews {
   [super layoutSubviews];
   
-  _label.frame = self.contentView.bounds;
+  TTStyledTextTableField* field = self.object;
+  _label.frame = CGRectOffset(self.contentView.bounds, field.margin.left, field.margin.top);
+}
+
+-(void)didMoveToSuperview {
+  [super didMoveToSuperview];
+  if (self.superview && [(UITableView*)self.superview style] == UITableViewStylePlain) {
+    _label.backgroundColor = self.superview.backgroundColor;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +235,7 @@ static CGFloat kDefaultIconSize = 50;
     
     TTStyledTextTableField* field = object;
     _label.text = field.styledText;
+    _label.contentInset = field.padding;
   }  
 }
 
@@ -243,7 +249,7 @@ static CGFloat kDefaultIconSize = 50;
   CGFloat maxWidth = tableView.width - (kKeyWidth + kKeySpacing + kHPadding*2 + kMargin*2);
   TTTitledTableField* field = item;
 
-  CGSize size = [field.text sizeWithFont:TTSTYLEVAR(tableFont)
+  CGSize size = [field.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
     constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
     lineBreakMode:UILineBreakModeWordWrap];
   
@@ -260,10 +266,7 @@ static CGFloat kDefaultIconSize = 50;
     _titleLabel.textColor = TTSTYLEVAR(linkTextColor);
     _titleLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
     _titleLabel.textAlignment = UITextAlignmentRight;
-    _titleLabel.contentMode = UIViewContentModeTop;
     [self.contentView addSubview:_titleLabel];
-
-    _label.contentMode = UIViewContentModeTop;
 	}
 	return self;
 }
@@ -279,7 +282,7 @@ static CGFloat kDefaultIconSize = 50;
 - (void)layoutSubviews {
   [super layoutSubviews];
 
-  CGSize titleSize = [@"M" sizeWithFont:TTSTYLEVAR(tableSmallFont)];
+  CGSize titleSize = [@"M" sizeWithFont:TTSTYLEVAR(tableTitleFont)];
   _titleLabel.frame = CGRectMake(kHPadding, kVPadding, kKeyWidth, titleSize.height);
 
   CGFloat valueWidth = self.contentView.width - (kHPadding*2 + kKeyWidth + kKeySpacing);

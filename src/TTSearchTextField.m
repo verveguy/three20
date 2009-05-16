@@ -233,13 +233,14 @@ static const CGFloat kDesiredTableHeight = 150;
 }
 
 - (void)reloadTable {
-  if ([_tableView.dataSource tableView:_tableView numberOfRowsInSection:0]) {
-    [_tableView reloadData];
-    _tableView.hidden = NO;
-    _shadowView.hidden = NO;
+  if ((![_dataSource respondsToSelector:@selector(numberOfSectionsInTableView:)]
+      || [_dataSource numberOfSectionsInTableView:_tableView])
+      && [_dataSource tableView:_tableView numberOfRowsInSection:0]) {
+    [self layoutIfNeeded];
+    [self showSearchResults:YES];
+    [self.tableView reloadData];
   } else {
-    _tableView.hidden = YES;
-    _shadowView.hidden = YES;
+    [self showSearchResults:NO];
   }
 }
 
@@ -392,8 +393,7 @@ static const CGFloat kDesiredTableHeight = 150;
 - (void)search {
   if (_dataSource) {
     NSString* text = self.searchText;
-    [self showSearchResults:!!text.length];
-    [_dataSource tableView:_tableView search:text];
+    [_dataSource tableView:self.tableView search:text];
   }
 }
 
@@ -411,7 +411,7 @@ static const CGFloat kDesiredTableHeight = 150;
     if (!_tableView.superview) {
       _tableView.frame = [self rectForSearchResults:YES];
       _shadowView.frame = CGRectMake(_tableView.left, _tableView.top-1,
-        _tableView.width, kShadowHeight);
+                                     _tableView.width, kShadowHeight);
       
       UIView* superview = self.superviewForSearchResults;
       [superview addSubview:_tableView];
@@ -453,7 +453,7 @@ static const CGFloat kDesiredTableHeight = 150;
     y += view.top;
     view = view.superview;
   }  
-
+  
   CGFloat height = self.height;
   CGFloat keyboardHeight = withKeyboard ? KEYBOARD_HEIGHT : 0;
   CGFloat tableHeight = self.window.height - (self.screenY + height + keyboardHeight);
