@@ -42,7 +42,10 @@ static const NSTimeInterval kSlideshowInterval = 2;
     self.navigationBarStyle = UIBarStyleBlackTranslucent;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
-    self.wantsFullScreenLayout = YES;
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.0) {
+      [self setWantsFullScreenLayout:YES];
+    }
   }
   return self;
 }
@@ -295,10 +298,22 @@ static const NSTimeInterval kSlideshowInterval = 2;
 }
 
 - (void)showBarsAnimationDidStop {
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
+    _innerView.top = -CHROME_HEIGHT;
+    self.view.top = TOOLBAR_HEIGHT;
+    self.view.height -= TOOLBAR_HEIGHT;
+  }
+  
   self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)hideBarsAnimationDidStop {
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
+    _innerView.top = -STATUS_HEIGHT;
+    self.view.top = 0;
+    self.view.height += TOOLBAR_HEIGHT;
+  }
+  
   self.navigationController.navigationBarHidden = YES;
 }
 
@@ -308,9 +323,17 @@ static const NSTimeInterval kSlideshowInterval = 2;
 - (void)loadView {
   CGRect screenFrame = [UIScreen mainScreen].bounds;
   self.view = [[[TTUnclippedView alloc] initWithFrame:screenFrame] autorelease];
-    
-  CGRect innerFrame = CGRectMake(0, 0,
-                                 screenFrame.size.width, screenFrame.size.height);
+  
+  CGRect innerFrame;
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
+    innerFrame = CGRectMake(0, -CHROME_HEIGHT,
+                                 screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
+  }
+  else {
+    innerFrame = CGRectMake(0, 0,
+                            screenFrame.size.width, screenFrame.size.height);
+  }
+  
   _innerView = [[UIView alloc] initWithFrame:innerFrame];
   [self.view addSubview:_innerView];
   
@@ -344,6 +367,10 @@ static const NSTimeInterval kSlideshowInterval = 2;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0 && !self.nextViewController) {
+    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+  }
 
   [self hideBarsAnimationDidStop];
   [self showBarsAnimationDidStop];
@@ -356,6 +383,11 @@ static const NSTimeInterval kSlideshowInterval = 2;
   [super viewWillDisappear:animated];
 
   [self pauseAction];
+  
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
+    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    self.view.frame = CGRectOffset(self.view.frame, 0, -TOOLBAR_HEIGHT);
+  }
   
   if (self.nextViewController) {
     [self showBars:YES animated:NO];
