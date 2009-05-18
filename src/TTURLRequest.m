@@ -109,7 +109,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
 
 - (NSData*)generatePostBody {
   NSMutableData *body = [NSMutableData data];
-  NSString *endLine = [NSString stringWithFormat:@"\r\n--%@\r\n", kStringBoundary];
+  NSString *beginLine = [NSString stringWithFormat:@"\r\n--%@\r\n", kStringBoundary];
 
   [body appendData:[[NSString stringWithFormat:@"--%@\r\n", kStringBoundary]
     dataUsingEncoding:NSUTF8StringEncoding]];
@@ -118,11 +118,11 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
     if (![[_parameters objectForKey:key] isKindOfClass:[UIImage class]]) {
       NSString* value = [_parameters valueForKey:key];
       
+      [body appendData:[beginLine dataUsingEncoding:NSUTF8StringEncoding]];
       [body appendData:[[NSString
         stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key]
           dataUsingEncoding:NSUTF8StringEncoding]];
       [body appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
-      [body appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];        
     }
   }
 
@@ -133,6 +133,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
       CGFloat quality = [TTURLRequestQueue mainQueue].imageCompressionQuality;
       NSData* imageData = UIImageJPEGRepresentation(image, quality);
       
+      [body appendData:[beginLine dataUsingEncoding:NSUTF8StringEncoding]];
       [body appendData:[[NSString
         stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"photo\"\r\n", key]
           dataUsingEncoding:NSUTF8StringEncoding]];
@@ -143,11 +144,12 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
         stringWithString:@"Content-Type: image/jpeg\r\n\r\n"]
           dataUsingEncoding:NSUTF8StringEncoding]];  
       [body appendData:imageData];
-      [body appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 //      [imageData release];
       imageKey = key;
     }
   }
+  
+  [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", kStringBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
   
   // If an image was found, remove it from the dictionary to save memory while we
   // perform the upload
@@ -158,7 +160,6 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   //TTLOG(@"Sending %s", [body bytes]);
   return body;
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSMutableDictionary*)parameters {
