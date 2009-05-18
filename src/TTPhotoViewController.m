@@ -327,7 +327,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
   CGRect innerFrame;
   if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
     innerFrame = CGRectMake(0, -CHROME_HEIGHT,
-                                 screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
+                            screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
   }
   else {
     innerFrame = CGRectMake(0, 0,

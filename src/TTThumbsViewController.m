@@ -255,7 +255,7 @@ static CGFloat kThumbnailRowHeight = 79;
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  
+
   if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
     self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
   }
