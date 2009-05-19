@@ -195,7 +195,9 @@ static CGFloat kThumbnailRowHeight = 79;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.0) {
+#ifdef __IPHONE_3_0
         self.wantsFullScreenLayout = YES;
+#endif
     }
   }
   

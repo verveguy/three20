@@ -44,7 +44,9 @@ static const NSTimeInterval kSlideshowInterval = 2;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
  
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.0) {
+#ifdef __IPHONE_3_0
         [self setWantsFullScreenLayout:YES];
+#endif
     }    
   }
   return self;
