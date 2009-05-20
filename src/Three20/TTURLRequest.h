@@ -7,6 +7,7 @@
   NSString* _httpMethod;
   NSData* _httpBody;
   NSMutableDictionary* _parameters;
+  NSMutableDictionary* _headers;
   NSString* _contentType;
   NSMutableArray* _delegates;
   id<TTURLResponse> _response;
@@ -54,6 +55,11 @@
  * Parameters to use for an HTTP post.
  */
 @property(nonatomic,readonly) NSMutableDictionary* parameters;
+
+/**
+ * Headers to send along with the request.
+ */
+@property(nonatomic,readonly) NSMutableDictionary* headers;
 
 /**
  * Defaults to "any".

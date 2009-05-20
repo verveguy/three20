@@ -160,6 +160,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   //TTLOG(@"Sending %s", [body bytes]);
   return body;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSMutableDictionary*)parameters {
@@ -167,6 +168,13 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
     _parameters = [[NSMutableDictionary alloc] init];
   }
   return _parameters;
+}
+
+- (NSMutableDictionary*)headers {
+  if (!_headers) {
+    _headers = [[NSMutableDictionary alloc] init];
+  }
+  return _headers;
 }
 
 - (NSData*)httpBody {
