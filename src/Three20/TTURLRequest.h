@@ -5,7 +5,7 @@
 @interface TTURLRequest : NSObject {
   NSString* _url;
   NSString* _httpMethod;
-  NSData* _httpBody;
+  NSData* _httpBody;	
   NSMutableDictionary* _parameters;
   NSMutableDictionary* _headers;
   NSString* _contentType;
@@ -19,6 +19,7 @@
   BOOL _isLoading;
   BOOL _shouldHandleCookies;
   BOOL _respondedFromCache;
+  BOOL _postShouldSendMultipartFormData;	
 }
 
 /**
@@ -82,6 +83,8 @@
 @property(nonatomic) BOOL shouldHandleCookies;
 
 @property(nonatomic) BOOL respondedFromCache;
+
+@property(nonatomic) BOOL postShouldSendMultipartFormData;
 
 + (TTURLRequest*)request;
 

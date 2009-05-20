@@ -35,4 +35,7 @@
   return [NSDictionary dictionaryWithDictionary:pairs];
 }
 
+- (NSString *)stringByEncodingURLEntities {
+	return [(NSString *) CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)self, NULL, CFSTR("?=&+"), kCFStringEncodingUTF8) autorelease];
+}
 @end

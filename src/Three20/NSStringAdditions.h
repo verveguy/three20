@@ -7,4 +7,5 @@
 
 - (NSDictionary*)queryDictionaryUsingEncoding: (NSStringEncoding)encoding;
 
+- (NSString *)stringByEncodingURLEntities;
 @end

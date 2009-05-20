@@ -15,7 +15,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   httpBody = _httpBody, parameters = _parameters, contentType = _contentType,
   cachePolicy = _cachePolicy, cacheExpirationAge = _cacheExpirationAge, cacheKey = _cacheKey,
   timestamp = _timestamp, userInfo = _userInfo, isLoading = _isLoading,
-  shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache;
+  shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache, postShouldSendMultipartFormData = _postShouldSendMultipartFormData;
 
 + (TTURLRequest*)request {
   return [[[TTURLRequest alloc] init] autorelease];
@@ -52,6 +52,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
     _isLoading = NO;
     _shouldHandleCookies = YES;
     _respondedFromCache = NO;
+	_postShouldSendMultipartFormData = YES;
   }
   return self;
 }
@@ -107,7 +108,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   }
 }
 
-- (NSData*)generatePostBody {
+- (NSData*)generateMultipartPostBody {
   NSMutableData *body = [NSMutableData data];
   NSString *beginLine = [NSString stringWithFormat:@"\r\n--%@\r\n", kStringBoundary];
 
@@ -161,6 +162,18 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   return body;
 }
 
+- (NSData*)generateURLEncodedPostBody {
+	NSMutableArray *urlParameters = [NSMutableArray array];
+	for (id key in [_parameters keyEnumerator]) {
+		if (![[_parameters objectForKey:key] isKindOfClass:[UIImage class]]) {
+			NSString* value = [_parameters valueForKey:key];
+			[urlParameters addObject:[NSString stringWithFormat:@"%@=%@", [key stringByEncodingURLEntities], [value stringByEncodingURLEntities]]];
+		}
+	}
+
+	return [[urlParameters componentsJoinedByString:@"&"] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (NSMutableDictionary*)parameters {
@@ -181,7 +194,11 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   if (_httpBody) {
     return _httpBody;
   } else if ([[_httpMethod uppercaseString] isEqualToString:@"POST"]) {
-    return [self generatePostBody];
+	  if (_postShouldSendMultipartFormData) {
+		  return [self generateMultipartPostBody];
+	  } else {
+		  return [self generateURLEncodedPostBody];
+	  }
   } else {
     return nil;
   }
@@ -191,7 +208,11 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   if (_contentType) {
     return _contentType;
   } else if ([_httpMethod isEqualToString:@"POST"]) {
-    return [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kStringBoundary];
+	  if (_postShouldSendMultipartFormData) {
+		  return [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kStringBoundary];
+	  } else {
+		  return @"application/x-www-form-urlencoded";
+	  }
   } else {
     return nil;
   }
