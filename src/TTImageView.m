@@ -45,6 +45,19 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
+- (id)initWithCoder:(NSCoder *)decoder {
+  if (self = [super initWithCoder:decoder]) {
+    _delegate = nil;
+    _request = nil;
+    _url = nil;
+    _image = nil;
+    _defaultImage = nil;
+    _autoresizesToImage = NO;
+    // Avoid fixing opaque property here, because it will be specified in XIB
+  }
+  return self;
+}
+
 - (id)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
     _delegate = nil;
@@ -54,6 +67,7 @@
     _defaultImage = nil;
     _autoresizesToImage = NO;
     self.opaque = YES;
+    self.userInteractionEnabled = NO;
   }
   return self;
 }

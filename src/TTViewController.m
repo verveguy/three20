@@ -17,17 +17,9 @@
 // private
 
 - (BOOL)resizeForKeyboard:(NSNotification*)notification {
-  NSValue* v1 = [notification.userInfo objectForKey:UIKeyboardBoundsUserInfoKey];
-  CGRect keyboardBounds;
-  [v1 getValue:&keyboardBounds];
-
-  NSValue* v2 = [notification.userInfo objectForKey:UIKeyboardCenterBeginUserInfoKey];
-  CGPoint keyboardStart;
-  [v2 getValue:&keyboardStart];
-
-  NSValue* v3 = [notification.userInfo objectForKey:UIKeyboardCenterEndUserInfoKey];
-  CGPoint keyboardEnd;
-  [v3 getValue:&keyboardEnd];
+  CGRect keyboardBounds = [[notification.userInfo objectForKey:UIKeyboardBoundsUserInfoKey] CGRectValue];
+  CGPoint keyboardStart = [[notification.userInfo objectForKey:UIKeyboardCenterBeginUserInfoKey] CGPointValue];
+  CGPoint keyboardEnd = [[notification.userInfo objectForKey:UIKeyboardCenterEndUserInfoKey] CGPointValue];
   
   CGFloat keyboardTop = keyboardEnd.y - floor(keyboardBounds.size.height/2);
   CGFloat screenBottom = self.view.screenY + self.view.height;
@@ -54,26 +46,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
-- (id)init {
-  if (self = [super init]) {  
-    _frozenState = nil;
-    _viewState = TTViewEmpty;
-    _contentError = nil;
-    _navigationBarStyle = UIBarStyleDefault;
-    _navigationBarTintColor = nil;
-    _statusBarStyle = UIStatusBarStyleDefault;
-    _invalidView = YES;
-    _invalidViewLoading = NO;
-    _invalidViewData = YES;
-    _validating = NO;
-    _appearing = NO;
-    _appeared = NO;
-    _unloaded = NO;
-    _autoresizesForKeyboard = NO;
-    
-    self.navigationBarTintColor = TTSTYLEVAR(navigationBarTintColor);
-  }
-  return self;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		_frozenState = nil;
+		_viewState = TTViewEmpty;
+		_contentError = nil;
+		_navigationBarStyle = UIBarStyleDefault;
+		_navigationBarTintColor = nil;
+		_statusBarStyle = UIStatusBarStyleDefault;
+		_invalidView = YES;
+		_invalidViewLoading = NO;
+		_invalidViewData = YES;
+		_validating = NO;
+		_appearing = NO;
+		_appeared = NO;
+		_unloaded = NO;
+		_autoresizesForKeyboard = NO;
+		
+		self.navigationBarTintColor = TTSTYLEVAR(navigationBarTintColor);
+	}
+	return self;
 }
 
 - (void)awakeFromNib {

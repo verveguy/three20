@@ -194,6 +194,11 @@ static CGFloat kThumbnailRowHeight = 79;
     self.navigationBarStyle = UIBarStyleBlackTranslucent;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.0) {
+#ifdef __IPHONE_3_0
+        self.wantsFullScreenLayout = YES;
+#endif
+    }
   }
   
   return self;
@@ -214,8 +219,16 @@ static CGFloat kThumbnailRowHeight = 79;
   self.view.autoresizesSubviews = YES;
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  CGRect innerFrame = CGRectMake(0, -CHROME_HEIGHT,
-                                 screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
+    CGRect innerFrame;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.0) {
+        innerFrame = CGRectMake(0, 0,
+                                       screenFrame.size.width, screenFrame.size.height);
+    }
+    else {
+        innerFrame = CGRectMake(0, -CHROME_HEIGHT,
+                                       screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);    
+    }
+
   UIView* innerView = [[UIView alloc] initWithFrame:innerFrame];
   innerView.backgroundColor = TTSTYLEVAR(backgroundColor);
   [self.view addSubview:innerView];
@@ -237,16 +250,17 @@ static CGFloat kThumbnailRowHeight = 79;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self suspendLoadingThumbnails:NO];
-
-  if (!self.nextViewController) {
-    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
-  }
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0 && !self.nextViewController) {
+            self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-
-  self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 3.0) {
+        self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    }  
 }  
 
 - (void)viewDidDisappear:(BOOL)animated {

@@ -167,6 +167,8 @@ static TTURLRequestQueue* gMainQueue = nil;
   int contentLength = [[headers objectForKey:@"Content-Length"] intValue];
   if (contentLength > _queue.maxContentLength && _queue.maxContentLength) {
     TTLOG(@"MAX CONTENT LENGTH EXCEEDED (%d) %@", contentLength, _url);
+    TTLOG(@"If this is not the behavior that you want, you should increase \
+the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
     [self cancel];
   }
 

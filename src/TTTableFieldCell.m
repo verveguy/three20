@@ -250,12 +250,15 @@ static CGFloat kDefaultIconSize = 50;
   CGFloat maxWidth = tableView.width - (kKeyWidth + kKeySpacing + kHPadding*2 + kMargin*2);
   TTTitledTableField* field = item;
 
-  CGSize size = [field.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
+  CGSize contentSize = [field.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
     constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
     lineBreakMode:UILineBreakModeWordWrap];
   
-  return size.height + kVPadding*2;
-
+  CGSize titleSize = [field.title sizeWithFont:TTSTYLEVAR(tableTitleFont)
+                      constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
+                      lineBreakMode:UILineBreakModeTailTruncation];
+  
+  return MAX(contentSize.height, titleSize.height) + kVPadding*2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +267,7 @@ static CGFloat kDefaultIconSize = 50;
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _titleLabel.font = TTSTYLEVAR(tableTitleFont);
-    _titleLabel.textColor = TTSTYLEVAR(linkTextColor);
+    _titleLabel.textColor = TTSTYLEVAR(tableTitleTextColor);
     _titleLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
     _titleLabel.textAlignment = UITextAlignmentRight;
     [self.contentView addSubview:_titleLabel];

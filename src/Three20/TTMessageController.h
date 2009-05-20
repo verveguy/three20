@@ -14,6 +14,7 @@
   TTTextEditor* _textEditor;
   TTActivityLabel* _statusView;
   NSArray* _initialRecipients;
+  BOOL _messageRequired;
 }
 
 @property(nonatomic,assign) id<TTMessageControllerDelegate> delegate;
@@ -21,6 +22,7 @@
 @property(nonatomic,retain) NSArray* fields;
 @property(nonatomic,retain) NSString* subject;
 @property(nonatomic,retain) NSString* body;
+@property(nonatomic) BOOL messageRequired;
 
 - (id)initWithRecipients:(NSArray*)recipients;
 
@@ -31,6 +33,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@class TTMessageField;
+
 @protocol TTMessageControllerDelegate <NSObject>
 
 @optional
@@ -40,6 +44,9 @@
 - (void)composeControllerDidCancel:(TTMessageController*)controller;
 
 - (void)composeControllerShowRecipientPicker:(TTMessageController*)controller;
+
+- (void)composeController:(TTMessageController*)controller willDisplayView:(UIView*)fieldView
+                 forField:(TTMessageField*)field;
 
 @end
 
@@ -74,5 +81,13 @@
 @end
 
 @interface TTMessageSubjectField : TTMessageTextField
+
+@end
+
+@interface TTMessageDateField : TTMessageField {
+    NSDate* _date;
+}
+
+@property(nonatomic,copy) NSDate* date;
 
 @end

@@ -15,45 +15,55 @@ static TTNavigationCenter* gDefaultCenter = nil;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface TTNavigationEntry : NSObject {
-  id _target;
-  SEL _action;
-  Class _cls;
-  TTNavigationRule _rule;
+	id _target;
+	SEL _action;
+	Class _cls;
+	NSString *_nib;
+	TTNavigationRule _rule;
 }
 
 @property(nonatomic,readonly) id target;
 @property(nonatomic,readonly) SEL action;
 @property(nonatomic,readonly) Class cls;
+@property(nonatomic,readonly) NSString *nib;
 @property(nonatomic,readonly) TTNavigationRule rule;
 
 - (id)initWithTarget:(id)target action:(SEL)action;
 
 - (id)initWithClass:(Class)cls rule:(TTNavigationRule)rule;
 
+- (id)initWithClass:(Class)cls rule:(TTNavigationRule)rule nib:(NSString*)nib;
+
 @end
 
 @implementation TTNavigationEntry
 
-@synthesize target = _target, action = _action, cls = _cls, rule = _rule;
+@synthesize target = _target, action = _action, cls = _cls, rule = _rule, nib = _nib;
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-  if (self = [super init]) {
-    _target = target;
-    _action = action;
-    _cls = nil;
-    _rule = 0;
-  }
-  return self;
+	if (self = [super init]) {
+		_target = target;
+		_action = action;
+		_cls = nil;
+		_nib = nil;
+		_rule = 0;
+	}
+	return self;
 }
 
 - (id)initWithClass:(Class)controllerClass rule:(TTNavigationRule)rule {
-  if (self = [super init]) {
-    _cls = controllerClass;
-    _rule = rule;
-    _target = nil;
-    _action = nil;
-  }
-  return self;
+	return [self initWithClass:controllerClass rule:rule nib:nil];
+}
+
+- (id)initWithClass:(Class)controllerClass rule:(TTNavigationRule)rule nib:(NSString*)nib {
+	if (self = [super init]) {
+		_cls = controllerClass;
+		_nib = nib;
+		_rule = rule;
+		_target = nil;
+		_action = nil;
+	}
+	return self;
 }
 
 @end
@@ -275,19 +285,29 @@ static TTNavigationCenter* gDefaultCenter = nil;
   }
 }
 
+
 - (void)addView:(NSString*)viewType target:(id)target action:(SEL)action {
-  TTNavigationEntry* entry = [[[TTNavigationEntry alloc] initWithTarget:target action:action]
-    autorelease];
-  [_viewLoaders setObject:entry forKey:viewType];
+	TTNavigationEntry* entry = [[[TTNavigationEntry alloc] initWithTarget:target action:action]
+								autorelease];
+	[_viewLoaders setObject:entry forKey:viewType];
 }
 
 - (void)addView:(NSString*)viewType controller:(Class)cls {
-  [self addView:viewType controller:cls rule:TTNavigationCreate];
+	[self addView:viewType controller:cls rule:TTNavigationCreate nibFile:nil];
 }
 
-- (void)addView:(NSString*)viewType controller:(Class)cls rule:(TTNavigationRule)rule {
-  TTNavigationEntry* entry = [[[TTNavigationEntry alloc] initWithClass:cls rule:rule] autorelease];
-  [_viewLoaders setObject:entry forKey:viewType];
+- (void)addView:(NSString*)viewType controller:(Class)cls nibFile:(NSString*)nib {
+	[self addView:viewType controller:cls rule:TTNavigationCreate nibFile:nib];
+}
+
+- (void)addView:(NSString*)viewType controller:(Class)cls rule:(TTNavigationRule)rule  {
+	TTNavigationEntry* entry = [[[TTNavigationEntry alloc] initWithClass:cls rule:rule nib:nil ] autorelease];
+	[_viewLoaders setObject:entry forKey:viewType];
+}
+
+- (void)addView:(NSString*)viewType controller:(Class)cls rule:(TTNavigationRule)rule nibFile:(NSString*)nib {
+	TTNavigationEntry* entry = [[[TTNavigationEntry alloc] initWithClass:cls rule:rule nib:nib ] autorelease];
+	[_viewLoaders setObject:entry forKey:viewType];
 }
 
 - (void)removeView:(NSString*)viewType {
@@ -488,9 +508,16 @@ static TTNavigationCenter* gDefaultCenter = nil;
         }
       }
 
-      if (!viewController) {
-        viewController = [[[entry.cls alloc] init] autorelease];
-      }
+		
+	 if (!viewController) {
+		if (entry.nib) {
+			viewController = [[[entry.cls alloc] initWithNibName:entry.nib bundle:nil] autorelease];
+		} else {
+			viewController = [[[entry.cls alloc] init] autorelease];
+		}
+	 } 
+		
+		
       
       if (object) {
         [viewController showObject:object inView:viewType withState:state];

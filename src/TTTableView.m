@@ -3,6 +3,7 @@
 #import "Three20/TTStyledTextLabel.h"
 #import "Three20/TTNavigationCenter.h"
 #import "Three20/TTTableViewDelegate.h"
+#import "Three20/TTDefaultStyleSheet.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global
@@ -35,6 +36,8 @@ static const CGFloat kCancelHighlightThreshold = 4;
     _menuCell = nil;
     
     self.delaysContentTouches = NO;
+    self.separatorColor = TTSTYLEVAR(tableSeparatorColor);
+    self.backgroundColor = TTSTYLEVAR(tableBackgroundColor);
   }
   return self;
 }

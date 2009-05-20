@@ -47,16 +47,17 @@ static const CGFloat kRefreshingViewHeight = 22;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
-- (id)init {
-  if (self = [super init]) {
-    _tableView = nil;
-    _refreshingView = nil;
-    _dataSource = nil;
-    _statusDataSource = nil;
-    _tableDelegate = nil;
-    _variableHeightRows = NO;
-  }  
-  return self;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		_tableView = nil;
+		_refreshingView = nil;
+		_dataSource = nil;
+		_statusDataSource = nil;
+		_tableDelegate = nil;
+		_variableHeightRows = NO;
+		
+	}
+	return self;
 }
 
 - (void)dealloc {
@@ -101,7 +102,7 @@ static const CGFloat kRefreshingViewHeight = 22;
 }
 
 - (void)updateView {
-  self.dataSource = [self createDataSource];
+	self.dataSource = [self createDataSource];
   
   if (_dataSource.isLoading) {
     if (_dataSource.isLoadingMore) {
@@ -140,7 +141,7 @@ static const CGFloat kRefreshingViewHeight = 22;
   if (self.viewState & TTViewRefreshing) {
     if (!_refreshingView) {
       _refreshingView = [[TTActivityLabel alloc] initWithFrame:
-        CGRectMake(0, _tableView.height, self.view.width, kRefreshingViewHeight)
+        CGRectMake(0, _tableView.frame.origin.y + _tableView.height, self.view.width, kRefreshingViewHeight)
         style:TTActivityLabelStyleBlackBox text:[self titleForActivity]];
       _refreshingView.centeredToScreen = NO;
       _refreshingView.userInteractionEnabled = NO;
@@ -224,6 +225,7 @@ static const CGFloat kRefreshingViewHeight = 22;
 // TTTableViewDataSourceDelegate
 
 - (void)dataSourceDidStartLoad:(id<TTTableViewDataSource>)dataSource {
+	//self.contentError = nil;
   if (dataSource.isLoadingMore) {
     [self invalidateViewState:(_viewState & TTViewDataStates) | TTViewLoadingMore];
   } else if (_viewState & TTViewDataStates) {

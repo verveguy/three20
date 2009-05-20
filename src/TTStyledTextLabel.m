@@ -43,6 +43,7 @@ static const CGFloat kCancelHighlightThreshold = 4;
     _highlightedFrame = nil;
     
     self.font = TTSTYLEVAR(font);
+    self.textColor = TTSTYLEVAR(textColor);
     self.backgroundColor = TTSTYLEVAR(backgroundColor);
     self.contentMode = UIViewContentModeRedraw;
     self.opaque = YES;
@@ -111,10 +112,21 @@ static const CGFloat kCancelHighlightThreshold = 4;
     
     TTStyledBoxFrame* affectFrame = frame ? frame : _highlightedFrame;
     NSString* className = affectFrame.element.className;
-    if (!className && [affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
-      className = @"linkText:";
+
+	  if([affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+		  if (!className) {
+			  className = @"linkText:";
+		  }
+		  
+		  if(frame && [_text.touchDelegate respondsToSelector:@selector(styledLinkNodeWasTouched:)]) {
+			  [_text.touchDelegate styledLinkNodeWasTouched:(TTStyledLinkNode*) affectFrame.element];
+		  }
+	  }
+
+    if(frame && [_text.touchDelegate respondsToSelector:@selector(styledNodeWasTouched:)]) {
+      [_text.touchDelegate styledNodeWasTouched:(TTStyledNode*)affectFrame.element];
     }
-    
+	  
     if (className && [className rangeOfString:@":"].location != NSNotFound) {
       if (frame) {
         TTStyle* style = [TTSTYLESHEET styleWithSelector:className
@@ -178,6 +190,31 @@ static const CGFloat kCancelHighlightThreshold = 4;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTStyledTextTouchDelegate
+- (void)styledLinkNodeWasTouched:(TTStyledLinkNode*)link {
+	[[[[UIAlertView alloc] initWithTitle:@"Link Touched" 
+								message:[NSString stringWithFormat:@"Open this URL in Safari? %@. ",link.url]
+							   delegate:self 
+					  cancelButtonTitle:@"Cancel" 
+					  otherButtonTitles:@"Open",nil] autorelease] show];	
+}
+
+- (void)styledNodeWasTouched:(TTStyledNode*)node {
+	NSLog(@"default impl some styled node was touched.");
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if(buttonIndex == 1 && _highlightedFrame && [_highlightedFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+		NSString *url = ((TTStyledLinkNode*)_highlightedFrame.element).url;
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
 - (void)setText:(TTStyledText*)text {
@@ -186,6 +223,9 @@ static const CGFloat kCancelHighlightThreshold = 4;
     [_text release];
     _text = [text retain];
     _text.delegate = self;
+    if(_text.touchDelegate == nil) {
+      _text.touchDelegate = self;
+    }
     _text.font = _font;
     [self setNeedsDisplay];
   }

@@ -1,0 +1,52 @@
+﻿/* Current page in photo browser (1 of 10) */
+"%d of %d" = "%1$d de %2$d";
+
+"Are you sure you want to cancel?" = "Êtes-vous certain de vouloir annuler ?";
+
+"Are you sure?" = "Êtes-vous certain ?";
+
+"Cancel" = "Annuler";
+
+"Done" = "OK";
+
+"Error" = "Erreur";
+
+"Load More Photos..." = "Charger plus de photos...";
+
+"Loading..." = "Chargement...";
+
+"New Message" = "Nouveau message";
+
+"No" = "Non";
+
+"No Photos" = "Aucune photo";
+
+/* Title for back button that returns to photo browser */
+"Photo" = "Photo";
+
+"Search" = "Rechercher";
+
+/* See all photo thumbnails */
+"See All" = "Tout voir";
+
+"Send" = "Envoyer";
+
+"Showing %d of %d Photos" = "Affichage de la photo %1$d de %2$d";
+
+"Sorry, an error has occurred." = "Désolé, une erreur s'est produite.";
+
+"Subject:" = "Objet :";
+
+"This photo is not available." = "Cette photo n'est pas disponible.";
+
+"This photo set contains no photos." = "Cet ensemble ne contient pas de photo.";
+
+"This photo set could not be loaded." = "Cet ensemble de photos ne peut être chargé.";
+
+"To:" = "À :";
+
+"Updating..." = "Mise à jour...";
+
+"Yes" = "Oui";
+
+"Open in Safari" = "Ouvrir dans Safari";

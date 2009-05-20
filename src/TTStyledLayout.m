@@ -417,6 +417,11 @@
           inlineFrame.height += padding.padding.top+padding.padding.bottom;
           inlineFrame = inlineFrame.inlineParentFrame;
         }
+		  
+        if(_lineWidth < padding.minSize.width) {
+          [self expandLineWidth:padding.minSize.width - _lineWidth];
+          _x = _lineWidth + _minX;
+        }
       }
       _inlineFrame = _inlineFrame.inlineParentFrame;
     }
