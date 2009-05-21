@@ -5,8 +5,9 @@
 @interface TTURLRequest : NSObject {
   NSString* _url;
   NSString* _httpMethod;
-  NSData* _httpBody;
+  NSData* _httpBody;	
   NSMutableDictionary* _parameters;
+  NSMutableDictionary* _headers;
   NSString* _contentType;
   NSMutableArray* _delegates;
   id<TTURLResponse> _response;
@@ -18,6 +19,7 @@
   BOOL _isLoading;
   BOOL _shouldHandleCookies;
   BOOL _respondedFromCache;
+  BOOL _postShouldSendMultipartFormData;	
 }
 
 /**
@@ -56,6 +58,11 @@
 @property(nonatomic,readonly) NSMutableDictionary* parameters;
 
 /**
+ * Headers to send along with the request.
+ */
+@property(nonatomic,readonly) NSMutableDictionary* headers;
+
+/**
  * Defaults to "any".
  */
 @property(nonatomic) TTURLRequestCachePolicy cachePolicy;
@@ -76,6 +83,8 @@
 @property(nonatomic) BOOL shouldHandleCookies;
 
 @property(nonatomic) BOOL respondedFromCache;
+
+@property(nonatomic) BOOL postShouldSendMultipartFormData;
 
 + (TTURLRequest*)request;
 

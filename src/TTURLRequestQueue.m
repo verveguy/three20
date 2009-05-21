@@ -106,6 +106,12 @@ static TTURLRequestQueue* gMainQueue = nil;
       [urlRequest setValue:contentType forHTTPHeaderField:@"Content-Type"];
     }
     
+    NSDictionary* headers = request.headers;
+    for (id key in [headers keyEnumerator]) {
+      NSString* value = [headers valueForKey:key];      
+      [urlRequest addValue:value forHTTPHeaderField:key];
+    }
+    		
     NSData* body = request.httpBody;
     if (body) {
       [urlRequest setHTTPBody:body];
