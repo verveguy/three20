@@ -423,6 +423,10 @@
   return [UIColor colorWithWhite:0.9 alpha:1];
 }
 
+- (UIColor*)tableBackgroundColor {
+  return RGBCOLOR(235, 235, 235);
+}
+
 - (UIColor*)searchTableBackgroundColor {
   return RGBCOLOR(235, 235, 235);
 }

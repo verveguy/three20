@@ -67,6 +67,7 @@
     _defaultImage = nil;
     _autoresizesToImage = NO;
     self.opaque = YES;
+    self.userInteractionEnabled = NO;
   }
   return self;
 }

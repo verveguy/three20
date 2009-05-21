@@ -27,6 +27,11 @@
     initWithRecipients:[NSArray arrayWithObject:recipient]] autorelease];
   controller.dataSource = _dataSource;
   controller.delegate = self;
+  
+  NSMutableArray *fields = [controller.fields mutableCopy];
+  [fields addObject:[[[TTMessageDateField alloc] initWithTitle:@"Send on:" required:YES] autorelease]];
+  controller.fields = fields;
+  
   [self presentModalViewController:controller animated:YES];
 }
 
@@ -38,6 +43,7 @@
   _sendTimer = nil;
   
   NSArray* fields = timer.userInfo;
+  NSLog(@"Sending fields: %@", fields);
   UIView* lastView = [self.view.subviews lastObject];
   CGFloat y = lastView.bottom + 20;
   
@@ -100,6 +106,14 @@
   UINavigationController* navController = [[[UINavigationController alloc] init] autorelease];
   [navController pushViewController:searchController animated:NO];
   [controller presentModalViewController:navController animated:YES];
+}
+
+- (void)composeController:(TTMessageController*)controller willDisplayView:(UIView*)fieldView
+                 forField:(TTMessageField*)field {
+  TTLOG(@"%s (%@, %@, %@)", __PRETTY_FUNCTION__, controller, fieldView, field);
+  if (field == nil) {  // Message field
+    [(TTTextEditor*)fieldView setPlaceholder:@"Write your message here."];
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

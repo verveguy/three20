@@ -111,32 +111,22 @@
 
 - (Class)tableView:(UITableView*)tableView cellClassForObject:(id)object {
   if ([object isKindOfClass:[TTTableField class]]) {
-    if ([object isKindOfClass:[TTTextTableField class]]) {
+    
+    NSString *objectClassString = NSStringFromClass([object class]);
+    
+    // Dynamically look up the corresponding cell class by name
+    // Return TTTextTableFieldCell if no class is found
+    
+    // Dynamic lookup can be confusing, but in this case it allows for the use of
+    // custom TTTableField[Cell] subclasses (without resorting to class registration... bleh)
+    
+    Class cellClass = NSClassFromString([objectClassString stringByAppendingString:@"Cell"]);
+    
+    // The appropriate cell class for TTTableField is TTTextTableFieldCell, not TTTableFieldCell
+    if (NULL == cellClass || [TTTableFieldCell class] == cellClass) {
       return [TTTextTableFieldCell class];
-    } else if ([object isKindOfClass:[TTTitledTableField class]]) {
-      return [TTTitledTableFieldCell class];
-    } else if ([object isKindOfClass:[TTSubtextTableField class]]) {
-      return [TTSubtextTableFieldCell class];
-    } else if ([object isKindOfClass:[TTMoreButtonTableField class]]) {
-      return [TTMoreButtonTableFieldCell class];
-    } else if ([object isKindOfClass:[TTIconTableField class]]) {
-      return [TTIconTableFieldCell class];
-    } else if ([object isKindOfClass:[TTImageTableField class]]) {
-      return [TTImageTableFieldCell class];
-    } else if ([object isKindOfClass:[TTActivityTableField class]]) {
-      return [TTActivityTableFieldCell class];
-    } else if ([object isKindOfClass:[TTErrorTableField class]]) {
-      return [TTErrorTableFieldCell class];
-    } else if ([object isKindOfClass:[TTTextFieldTableField class]]) {
-      return [TTTextFieldTableFieldCell class];
-    } else if ([object isKindOfClass:[TTTextViewTableField class]]) {
-      return [TTTextViewTableFieldCell class];
-    } else if ([object isKindOfClass:[TTSwitchTableField class]]) {
-      return [TTSwitchTableFieldCell class];
-    } else if ([object isKindOfClass:[TTStyledTextTableField class]]) {
-      return [TTStyledTextTableFieldCell class];
     } else {
-      return [TTTextTableFieldCell class];
+      return cellClass;
     }
   }
   
@@ -230,17 +220,14 @@
 // NSObject
 
 - (id)initWithItems:(NSArray*)items {
-  if (self = [self init]) {
+  if (self = [super init]) {
     _items = [items mutableCopy];
   }
   return self;
 }
 
 - (id)init {
-  if (self = [super init]) {
-    _items = nil;
-  }
-  return self;
+  return [self initWithItems:[NSArray array]];
 }
 
 - (void)dealloc {
@@ -340,7 +327,7 @@
 // NSObject
 
 - (id)initWithItems:(NSArray*)items sections:(NSArray*)sections {
-  if (self = [self init]) {
+  if (self = [super init]) {
     _items = [items mutableCopy];
     _sections = [sections mutableCopy];
   }
@@ -348,11 +335,7 @@
 }
 
 - (id)init {
-  if (self = [super init]) {
-    _items = nil;
-    _sections = nil;
-  }
-  return self;
+  return [self initWithItems:[NSArray array] sections:[NSArray array]];
 }
 
 - (void)dealloc {

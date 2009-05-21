@@ -199,6 +199,7 @@ static CGFloat kDefaultIconSize = 50;
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString*)identifier {
   if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
     _label = [[TTStyledTextLabel alloc] initWithFrame:CGRectZero];
+    _label.backgroundColor = [UIColor clearColor];
     [self.contentView addSubview:_label];
   }
   return self;
