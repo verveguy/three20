@@ -1,6 +1,6 @@
 build
 *.pbxuser
 *.perspectivev3
-*.modelv3
+*.mode1v3
 .DS_Store
 CVS
