@@ -15,7 +15,11 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   httpBody = _httpBody, parameters = _parameters, contentType = _contentType,
   cachePolicy = _cachePolicy, cacheExpirationAge = _cacheExpirationAge, cacheKey = _cacheKey,
   timestamp = _timestamp, userInfo = _userInfo, isLoading = _isLoading,
+<<<<<<< HEAD:src/TTURLRequest.m
   shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache,  postShouldSendMultipartFormData = _postShouldSendMultipartFormData, headers = _headers;
+=======
+  shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache, postShouldSendMultipartFormData = _postShouldSendMultipartFormData, headers = _headers;
+>>>>>>> f1dcacc724fa9ee66f71578d2bb67cd5bf1cef46:src/TTURLRequest.m
 
 + (TTURLRequest*)request {
   return [[[TTURLRequest alloc] init] autorelease];
