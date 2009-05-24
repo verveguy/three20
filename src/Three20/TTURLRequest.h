@@ -23,6 +23,11 @@
 }
 
 /**
+ * custom request headers
+ */
+@property(nonatomic,readonly) NSMutableDictionary* headers;
+
+/**
  * An object that receives messages about the progress of the request.
  */
 @property(nonatomic,readonly) NSMutableArray* delegates;
@@ -109,6 +114,11 @@
  * not be cancelled.
  */
 - (void)cancel;
+
+/**
+ * Sets the specified HTTP header field.
+ */
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field;
 
 @end
 
