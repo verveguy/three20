@@ -1,6 +1,13 @@
+# xcode noise
 build
 *.pbxuser
 *.perspectivev3
 *.mode1v3
-.DS_Store
+
+# other noise
+.hg
 CVS
+
+# osx noise
+.DS_Store
+profile
