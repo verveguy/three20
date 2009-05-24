@@ -301,6 +301,25 @@
   return [[[self alloc] initWithItems:items sections:sections] autorelease];
 }
 
+- (void)addObjects:(id)object,...
+{
+  NSMutableArray* section = nil;
+  va_list ap;
+  va_start(ap, object);
+  while (object) {
+    if ([object isKindOfClass:[NSString class]]) {
+      [_sections addObject:object];
+      section = [NSMutableArray array];
+      [_items addObject:section];
+    } else {
+      [section addObject:object];
+    }
+    object = va_arg(ap, id);
+  }
+  va_end(ap);
+}
+
+
 + (TTSectionedDataSource*)dataSourceWithArrays:(id)object,... {
   NSMutableArray* items = [NSMutableArray array];
   NSMutableArray* sections = [NSMutableArray array];

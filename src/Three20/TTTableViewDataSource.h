@@ -97,4 +97,6 @@
 
 - (NSArray*)lettersForSectionsWithSearch:(BOOL)withSearch withCount:(BOOL)withCount;
 
+- (void)addObjects:(id)object,...;
+
 @end
