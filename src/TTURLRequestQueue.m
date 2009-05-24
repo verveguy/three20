@@ -8,7 +8,7 @@
 static const NSTimeInterval kFlushDelay = 0.3;
 static const NSTimeInterval kTimeout = 300.0;
 static const NSInteger kLoadMaxRetries = 2;
-static const NSInteger kMaxConcurrentLoads = 5;
+static const NSInteger kDefaultMaxConcurrentLoads = 5;
 static NSUInteger kDefaultMaxContentLength = 150000;
 
 static NSString* kSafariUserAgent = @"Mozilla/5.0 (iPhone; U; CPU iPhone OS 2_2 like Mac OS X;\
@@ -173,8 +173,6 @@ static TTURLRequestQueue* gMainQueue = nil;
   int contentLength = [[headers objectForKey:@"Content-Length"] intValue];
   if (contentLength > _queue.maxContentLength && _queue.maxContentLength) {
     TTLOG(@"MAX CONTENT LENGTH EXCEEDED (%d) %@", contentLength, _url);
-    TTLOG(@"If this is not the behavior that you want, you should increase \
-the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
     [self cancel];
   }
 
@@ -285,7 +283,7 @@ the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
 
 @implementation TTURLRequestQueue
 
-@synthesize maxContentLength = _maxContentLength, userAgent = _userAgent, suspended = _suspended,
+@synthesize maxConcurrentLoads = _maxConcurrentLoads, maxContentLength = _maxContentLength, userAgent = _userAgent, suspended = _suspended,
   imageCompressionQuality = _imageCompressionQuality;
 
 + (TTURLRequestQueue*)mainQueue {
@@ -310,6 +308,7 @@ the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
     _loaderQueue = [[NSMutableArray alloc] init];
     _loaderQueueTimer = nil;
     _totalLoading = 0;
+	_maxConcurrentLoads = kDefaultMaxConcurrentLoads;
     _maxContentLength = kDefaultMaxContentLength;
     _imageCompressionQuality = 0.75;
     _userAgent = [kSafariUserAgent copy];
@@ -459,7 +458,7 @@ the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
   _loaderQueueTimer = nil;
 
   for (int i = 0;
-       i < kMaxConcurrentLoads && _totalLoading < kMaxConcurrentLoads
+       i < _maxConcurrentLoads && _totalLoading < _maxConcurrentLoads
        && _loaderQueue.count;
        ++i) {
     TTRequestLoader* loader = [[_loaderQueue objectAtIndex:0] retain];
@@ -557,7 +556,7 @@ the value of the maxContentLength property [TTURLRequestQueue mainQueue]");
   // Finally, create a new loader and hit the network (unless we are suspended)
   loader = [[TTRequestLoader alloc] initForRequest:request queue:self];
   [_loaders setObject:loader forKey:request.cacheKey];
-  if (_suspended || _totalLoading == kMaxConcurrentLoads) {
+  if (_suspended || _totalLoading == _maxConcurrentLoads) {
     [_loaderQueue addObject:loader];
   } else {
     ++_totalLoading;

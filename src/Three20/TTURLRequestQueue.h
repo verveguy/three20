@@ -7,6 +7,7 @@
   NSMutableArray* _loaderQueue;
   NSTimer* _loaderQueueTimer;
   NSInteger _totalLoading;
+  NSUInteger _maxConcurrentLoads;
   NSUInteger _maxContentLength;
   NSString* _userAgent;
   CGFloat _imageCompressionQuality;
@@ -21,6 +22,14 @@
  * suspended becomes false again they are executed.
  */
 @property(nonatomic) BOOL suspended;
+
+/**
+ * The maximum number of concurrent loads that are allowed.
+ *
+ * If a request is made that exceeds the maximum number of concurrent loads in progress
+ * it will be queued and wait until the load has decreased. Defaults to 5.
+ */
+@property(nonatomic) NSUInteger maxConcurrentLoads;
 
 /**
  * The maximum size of a download that is allowed.
