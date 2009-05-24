@@ -116,6 +116,14 @@ static TTURLRequestQueue* gMainQueue = nil;
     if (body) {
       [urlRequest setHTTPBody:body];
     }
+	
+	NSMutableDictionary *headers = request.headers;
+	if (headers && [headers count] > 0){
+	  for (NSString *key in headers) {
+		[urlRequest setValue:[headers objectForKey:key] forHTTPHeaderField:key];
+	  }
+	}
+
   }
   
   _connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];

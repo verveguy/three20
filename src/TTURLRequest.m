@@ -15,7 +15,7 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
   httpBody = _httpBody, parameters = _parameters, contentType = _contentType,
   cachePolicy = _cachePolicy, cacheExpirationAge = _cacheExpirationAge, cacheKey = _cacheKey,
   timestamp = _timestamp, userInfo = _userInfo, isLoading = _isLoading,
-  shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache, postShouldSendMultipartFormData = _postShouldSendMultipartFormData;
+  shouldHandleCookies = _shouldHandleCookies, respondedFromCache = _respondedFromCache,  postShouldSendMultipartFormData = _postShouldSendMultipartFormData, headers = _headers;
 
 + (TTURLRequest*)request {
   return [[[TTURLRequest alloc] init] autorelease];
@@ -197,6 +197,13 @@ static NSString* kStringBoundary = @"3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field {
+	if (!_headers) {
+		_headers = [[NSMutableDictionary alloc] init];
+	}
+	[_headers setObject:value forKey:field];
+}
 
 - (NSMutableDictionary*)parameters {
   if (!_parameters) {
