@@ -23,11 +23,6 @@
 }
 
 /**
- * custom request headers
- */
-@property(nonatomic,readonly) NSMutableDictionary* headers;
-
-/**
  * An object that receives messages about the progress of the request.
  */
 @property(nonatomic,readonly) NSMutableArray* delegates;
@@ -65,7 +60,7 @@
 /**
  * Headers to send along with the request.
  */
-@property(nonatomic,readonly) NSMutableDictionary* headers;
+@property(nonatomic, copy) NSMutableDictionary* headers;
 
 /**
  * Defaults to "any".
