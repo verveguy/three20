@@ -16,6 +16,7 @@
 #import "ButtonTestController.h"
 #import "TabBarTestController.h"
 #import "WebTestController.h"
+#import "TableAsyncViewController.h"
 #import "Three20/developer.h"
 
 @implementation RootViewController
@@ -46,6 +47,7 @@
   [nav addView:@"tableTest" controller:[TableTestController class]];
   [nav addView:@"tableFieldTest" controller:[TableFieldTestController class]];
   [nav addView:@"styledTextTableTest" controller:[StyledTextTableTestController class]];
+  [nav addView:@"tableAsyncTest" controller:[TableAsyncViewController class]];
   [nav addView:@"composerTest" controller:[MessageTestController class]];
   [nav addView:@"searchTest" controller:[SearchTestController class]];
   [nav addView:@"activityTest" controller:[ActivityTestController class]];
@@ -103,6 +105,8 @@
       url:@"tt://styledTextTableTest"] autorelease],
     [[[TTTableField alloc] initWithText:@"Web Images in Table"
       url:@"tt://imageTest2"] autorelease],
+    [[[TTTableField alloc] initWithText:@"Async Data Source"
+      url:@"tt://tableAsyncTest"] autorelease],
 
     @"General",
     [[[TTTableField alloc] initWithText:@"Web Image"

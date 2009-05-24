@@ -51,15 +51,49 @@
     CGImageGetBitmapInfo(imageRef));
 
   if (rotate) {
-    if (self.imageOrientation == UIImageOrientationDown) {
-      CGContextTranslateCTM(bitmap, sourceW, sourceH);
-      CGContextRotateCTM(bitmap, 180 * (M_PI/180));
-    } else if (self.imageOrientation == UIImageOrientationLeft) {
-      CGContextTranslateCTM(bitmap, sourceH, 0);
-      CGContextRotateCTM(bitmap, 90 * (M_PI/180));
-    } else if (self.imageOrientation == UIImageOrientationRight) {
-      CGContextTranslateCTM(bitmap, 0, sourceW);
-      CGContextRotateCTM(bitmap, -90 * (M_PI/180));
+    switch(self.imageOrientation) {
+      case UIImageOrientationUp: //EXIF = 1
+        // Do nothing
+        break;
+        
+      case UIImageOrientationUpMirrored: //EXIF = 2
+        CGContextTranslateCTM(bitmap, sourceW, 0);
+        CGContextScaleCTM(bitmap, -1.0, 1.0);
+        break;
+        
+      case UIImageOrientationDown: //EXIF = 3
+        CGContextTranslateCTM(bitmap, sourceW, sourceH);
+        CGContextRotateCTM(bitmap, 180 * (M_PI/180));
+        break;
+        
+      case UIImageOrientationDownMirrored: //EXIF = 4
+        CGContextTranslateCTM(bitmap, 0.0, sourceH);
+        CGContextScaleCTM(bitmap, 1.0, -1.0);
+        break;
+        
+      case UIImageOrientationLeftMirrored: //EXIF = 5
+        CGContextTranslateCTM(bitmap, sourceH, sourceW);
+        CGContextScaleCTM(bitmap, -1.0, 1.0);
+        CGContextRotateCTM(bitmap, 3.0 * M_PI / 2.0);
+        break;
+        
+      case UIImageOrientationLeft: //EXIF = 6
+        CGContextTranslateCTM(bitmap, sourceH, 0);
+        CGContextRotateCTM(bitmap, 90 * (M_PI/180));
+        break;
+        
+      case UIImageOrientationRightMirrored: //EXIF = 7
+        CGContextScaleCTM(bitmap, -1.0, 1.0);
+        CGContextRotateCTM(bitmap, M_PI / 2.0);
+        break;
+        
+      case UIImageOrientationRight: //EXIF = 8
+        CGContextTranslateCTM(bitmap, 0, sourceW);
+        CGContextRotateCTM(bitmap, -90 * (M_PI/180));
+        break;
+        
+      default:
+        TTLOG(@"Unknown image orientation: %d", self.imageOrientation);
     }
   }
 
