@@ -358,7 +358,6 @@
   if (subjectField) {
     _navigationBar.topItem.title = subjectField.text;
   }
-  [self updateSendCommand];
 }
 
 - (void)showRecipientPicker {
@@ -474,6 +473,7 @@
     [NSTimer scheduledTimerWithTimeInterval:0 target:self
       selector:@selector(setTitleToSubject) userInfo:nil repeats:NO];
   }
+  [self performSelector:@selector(updateSendCommand) withObject:nil afterDelay:0];
   return YES;
 }
 

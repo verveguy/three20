@@ -27,8 +27,11 @@
     initWithRecipients:[NSArray arrayWithObject:recipient]] autorelease];
   controller.dataSource = _dataSource;
   controller.delegate = self;
+  controller.messageRequired = NO;
   
   NSMutableArray *fields = [controller.fields mutableCopy];
+  [[fields objectAtIndex:1] setRequired:YES];
+  [fields addObject:[[[TTMessageTextField alloc] initWithTitle:@"Required:" required:YES] autorelease]];
   [fields addObject:[[[TTMessageDateField alloc] initWithTitle:@"Send on:" required:YES] autorelease]];
   controller.fields = fields;
   
