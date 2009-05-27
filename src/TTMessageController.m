@@ -447,6 +447,7 @@
     [_statusView removeFromSuperview];
     [_statusView release];
     _statusView = nil;
+    [self updateSendCommand];
   }
 }
 
