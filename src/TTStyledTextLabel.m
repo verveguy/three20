@@ -201,7 +201,6 @@ static const CGFloat kCancelHighlightThreshold = 4;
 }
 
 - (void)styledNodeWasTouched:(TTStyledNode*)node {
-	NSLog(@"default impl some styled node was touched.");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
