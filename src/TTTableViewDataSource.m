@@ -371,7 +371,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-  if (_sections) {
+  if (_sections.count) {
     NSArray* items = [_items objectAtIndex:section];
     return items.count;
   } else {
