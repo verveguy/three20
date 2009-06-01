@@ -522,6 +522,10 @@ static TTURLRequestQueue* gMainQueue = nil;
   }
 }
 
+- (NSInteger)loadCount {
+	return _totalLoading;
+}
+
 - (BOOL)sendRequest:(TTURLRequest*)request {
   for (id<TTURLRequestDelegate> delegate in request.delegates) {
     if ([delegate respondsToSelector:@selector(requestDidStartLoad:)]) {

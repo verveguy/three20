@@ -32,6 +32,11 @@
 @property(nonatomic) NSUInteger maxConcurrentLoads;
 
 /**
+ * The number of of loads queued.
+ */
+@property(nonatomic, readonly) NSInteger loadCount;
+
+/**
  * The maximum size of a download that is allowed.
  *
  * If a response reports a content length greater than the max, the download will be
