@@ -15,7 +15,7 @@
     return
       [TTInsetStyle styleWithInset:UIEdgeInsetsMake(-3, -4, -3, -4) next:
       [TTShapeStyle styleWithShape:[TTRoundedRectangleShape shapeWithRadius:4.5] next:
-      [TTSolidFillStyle styleWithColor:[UIColor colorWithWhite:0.8 alpha:1] next:
+      [TTSolidFillStyle styleWithColor:[UIColor colorWithWhite:0.75 alpha:1] next:
       [TTInsetStyle styleWithInset:UIEdgeInsetsMake(3, 4, 3, 4) next:
       [TTTextStyle styleWithColor:self.linkTextColor next:nil]]]]];
   } else {
@@ -33,11 +33,15 @@
 - (TTStyle*)thumbView:(UIControlState)state {
   if (state & UIControlStateHighlighted) {
     return
-      [TTSolidFillStyle styleWithColor:RGBCOLOR(200,200,200) next:
-      [TTSolidBorderStyle styleWithColor:RGBACOLOR(0,0,0,0.4) width:1 next:nil]];
+      [TTImageStyle styleWithImageURL:nil defaultImage:nil
+                    contentMode:UIViewContentModeScaleAspectFill size:CGSizeZero next:
+      [TTSolidBorderStyle styleWithColor:RGBACOLOR(0,0,0,0.4) width:1 next:
+      [TTSolidFillStyle styleWithColor:RGBACOLOR(0,0,0,0.5) next:nil]]];
   } else {
     return
-      [TTSolidBorderStyle styleWithColor:RGBACOLOR(0,0,0,0.4) width:1 next:nil];
+      [TTImageStyle styleWithImageURL:nil defaultImage:nil
+                    contentMode:UIViewContentModeScaleAspectFill size:CGSizeZero next:
+      [TTSolidBorderStyle styleWithColor:RGBACOLOR(0,0,0,0.4) width:1 next:nil]];
   }
 }
 
@@ -177,7 +181,7 @@
     [TTSolidBorderStyle styleWithColor:RGBCOLOR(178, 178, 178) width:1 next:nil]]];
 }
 
-- (TTStyle*)badge {
+- (TTStyle*)badgeWithFontSize:(CGFloat)fontSize {
   return
     [TTShapeStyle styleWithShape:[TTRoundedRectangleShape shapeWithRadius:TT_ROUNDED] next:
     [TTInsetStyle styleWithInset:UIEdgeInsetsMake(1, 1, 1, 1) next:
@@ -185,9 +189,17 @@
     [TTReflectiveFillStyle styleWithColor:RGBCOLOR(221, 17, 27) next:
     [TTInsetStyle styleWithInset:UIEdgeInsetsMake(-1, -1, -1, -1) next:
     [TTSolidBorderStyle styleWithColor:[UIColor whiteColor] width:2 next:
-    [TTBoxStyle styleWithPadding:UIEdgeInsetsMake(1, 6, 3, 6) next:
-    [TTTextStyle styleWithFont:[UIFont boldSystemFontOfSize:13]
+    [TTBoxStyle styleWithPadding:UIEdgeInsetsMake(2, 7, 2, 7) next:
+    [TTTextStyle styleWithFont:[UIFont boldSystemFontOfSize:fontSize]
                  color:[UIColor whiteColor] next:nil]]]]]]]];
+}
+
+- (TTStyle*)miniBadge {
+  return [self badgeWithFontSize:12];
+}
+
+- (TTStyle*)badge {
+  return [self badgeWithFontSize:15];
 }
 
 - (TTStyle*)tabBar {
@@ -218,6 +230,12 @@
     [TTSolidBorderStyle styleWithColor:shadow width:1 next:nil]]]]];
 }
 
+- (TTStyle*)tabGridTabImage:(UIControlState)state {
+  return
+    [TTImageStyle styleWithImageURL:nil defaultImage:nil contentMode:UIViewContentModeLeft
+                  size:CGSizeZero next:nil];
+}
+
 - (TTStyle*)tabGridTab:(UIControlState)state corner:(short)corner {
   TTShape* shape = nil;
   if (corner == 1) {
@@ -228,6 +246,10 @@
     shape = [TTRoundedRectangleShape shapeWithTopLeft:0 topRight:0 bottomRight:8 bottomLeft:0];
   } else if (corner == 4) {
     shape = [TTRoundedRectangleShape shapeWithTopLeft:0 topRight:0 bottomRight:0 bottomLeft:8];
+  } else if (corner == 5) {
+    shape = [TTRoundedRectangleShape shapeWithTopLeft:8 topRight:0 bottomRight:0 bottomLeft:8];
+  } else if (corner == 6) {
+    shape = [TTRoundedRectangleShape shapeWithTopLeft:0 topRight:8 bottomRight:8 bottomLeft:0];
   } else {
     shape = [TTRectangleShape shape];
   }
@@ -241,17 +263,19 @@
       [TTSolidFillStyle styleWithColor:RGBCOLOR(150, 168, 191) next:
       [TTInnerShadowStyle styleWithColor:RGBACOLOR(0,0,0,0.6) blur:3 offset:CGSizeMake(0, 0) next:
       [TTBoxStyle styleWithPadding:UIEdgeInsetsMake(11, 10, 9, 10) next:
+      [TTPartStyle styleWithName:@"image" style:[self tabGridTabImage:state] next:
       [TTTextStyle styleWithFont:[UIFont boldSystemFontOfSize:11]  color:RGBCOLOR(255, 255, 255)
                    minimumFontSize:8 shadowColor:RGBACOLOR(0,0,0,0.1) shadowOffset:CGSizeMake(-1,-1)
-                   next:nil]]]]];
+                   next:nil]]]]]];
   } else {
     return
       [TTShapeStyle styleWithShape:shape next:
       [TTBevelBorderStyle styleWithHighlight:highlight shadow:shadow width:1 lightSource:125 next:
       [TTBoxStyle styleWithPadding:UIEdgeInsetsMake(11, 10, 9, 10) next:
+      [TTPartStyle styleWithName:@"image" style:[self tabGridTabImage:state] next:
       [TTTextStyle styleWithFont:[UIFont boldSystemFontOfSize:11]  color:self.linkTextColor
                    minimumFontSize:8 shadowColor:[UIColor colorWithWhite:255 alpha:0.9]
-                   shadowOffset:CGSizeMake(0, -1) next:nil]]]];
+                   shadowOffset:CGSizeMake(0, -1) next:nil]]]]];
   }
 }
 
@@ -269,6 +293,14 @@
 
 - (TTStyle*)tabGridTabBottomLeft:(UIControlState)state {
   return [self tabGridTab:state corner:4];
+}
+
+- (TTStyle*)tabGridTabLeft:(UIControlState)state {
+  return [self tabGridTab:state corner:5];
+}
+
+- (TTStyle*)tabGridTabRight:(UIControlState)state {
+  return [self tabGridTab:state corner:6];
 }
 
 - (TTStyle*)tabGridTabCenter:(UIControlState)state {
@@ -407,6 +439,10 @@
   return nil;
 }
 
+- (UIColor*)tableSeparatorColor {
+  return [UIColor colorWithWhite:0.9 alpha:1];
+}
+
 - (UIColor*)searchTableBackgroundColor {
   return RGBCOLOR(235, 235, 235);
 }
@@ -458,8 +494,12 @@
   return [UIFont boldSystemFontOfSize:13];
 }
 
+- (UIFont*)tableTitleValueFont {
+  return [UIFont boldSystemFontOfSize:15];
+}
+
 - (UIFont*)tableButtonFont {
-  return [UIFont boldSystemFontOfSize:16];
+  return [UIFont boldSystemFontOfSize:13];
 }
 
 - (UIFont*)tableSummaryFont {
@@ -490,7 +530,7 @@
 // private
 
 - (UIColor*)toolbarButtonColorWithTintColor:(UIColor*)color forState:(UIControlState)state {
-  if (state & UIControlStateHighlighted) {
+  if (state & UIControlStateHighlighted || state & UIControlStateSelected) {
     if (color.value < 0.2) {
       return [color addHue:0 saturation:0 value:0.2];
     } else if (color.saturation > 0.3) {
@@ -527,7 +567,7 @@
 
   return 
     [TTShapeStyle styleWithShape:shape next:
-    [TTInsetStyle styleWithInset:UIEdgeInsetsMake(1, 0, 1, 0) next:
+    [TTInsetStyle styleWithInset:UIEdgeInsetsMake(2, 0, 1, 0) next:
     [TTShadowStyle styleWithColor:RGBACOLOR(255,255,255,0.25) blur:0 offset:CGSizeMake(0, 1) next:
     [TTReflectiveFillStyle styleWithColor:stateTintColor next:
     [TTBevelBorderStyle styleWithHighlight:[stateTintColor multiplyHue:1 saturation:0.9 value:0.7]
@@ -537,9 +577,11 @@
     [TTBevelBorderStyle styleWithHighlight:nil shadow:RGBACOLOR(0,0,0,0.15)
                         width:1 lightSource:270 next:
     [TTBoxStyle styleWithPadding:UIEdgeInsetsMake(8, 8, 8, 8) next:
+    [TTImageStyle styleWithImageURL:nil defaultImage:nil
+                  contentMode:UIViewContentModeScaleToFill size:CGSizeZero next:
     [TTTextStyle styleWithFont:font
                  color:stateTextColor shadowColor:[UIColor colorWithWhite:0 alpha:0.4]
-                 shadowOffset:CGSizeMake(0, -1) next:nil]]]]]]]]];
+                 shadowOffset:CGSizeMake(0, -1) next:nil]]]]]]]]]];
 }
 
 - (TTStyle*)selectionFillStyle:(TTStyle*)next {

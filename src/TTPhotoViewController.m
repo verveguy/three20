@@ -3,6 +3,7 @@
 #import "Three20/TTURLRequest.h"
 #import "Three20/TTUnclippedView.h"
 #import "Three20/TTPhotoView.h"
+#import "Three20/TTURLRequestQueue.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,11 +43,16 @@ static const NSTimeInterval kSlideshowInterval = 2;
     self.navigationBarStyle = UIBarStyleBlackTranslucent;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
+    
+    if ([self respondsToSelector:@selector(setWantsFullScreenLayout:)]) {
+      [self setWantsFullScreenLayout:YES];
+    }
   }
   return self;
 }
 
 - (void)dealloc {
+  [[TTURLRequestQueue mainQueue] cancelRequestsWithDelegate:self];
   [_thumbsController release];
   [_slideshowTimer invalidate];
   _slideshowTimer = nil;
@@ -294,18 +300,20 @@ static const NSTimeInterval kSlideshowInterval = 2;
 }
 
 - (void)showBarsAnimationDidStop {
-  _innerView.top = -CHROME_HEIGHT;
-  self.view.top = TOOLBAR_HEIGHT;
-  self.view.height -= TOOLBAR_HEIGHT;
-
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    _innerView.top = -CHROME_HEIGHT;
+    self.view.top = TOOLBAR_HEIGHT;
+    self.view.height -= TOOLBAR_HEIGHT;
+  }
   self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)hideBarsAnimationDidStop {
-  _innerView.top = -STATUS_HEIGHT;
-  self.view.top = 0;
-  self.view.height += TOOLBAR_HEIGHT;
-  
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    _innerView.top = -STATUS_HEIGHT;
+    self.view.top = 0;
+    self.view.height += TOOLBAR_HEIGHT;
+  }
   self.navigationController.navigationBarHidden = YES;
 }
 
@@ -316,7 +324,8 @@ static const NSTimeInterval kSlideshowInterval = 2;
   CGRect screenFrame = [UIScreen mainScreen].bounds;
   self.view = [[[TTUnclippedView alloc] initWithFrame:screenFrame] autorelease];
     
-  CGRect innerFrame = CGRectMake(0, -CHROME_HEIGHT,
+  CGFloat y = TTOSVersionIsAtLeast(3.0) ? 0 : -CHROME_HEIGHT;
+  CGRect innerFrame = CGRectMake(0, y,
                                  screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
   _innerView = [[UIView alloc] initWithFrame:innerFrame];
   [self.view addSubview:_innerView];
@@ -352,14 +361,16 @@ static const NSTimeInterval kSlideshowInterval = 2;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  if (!self.nextViewController) {
-    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
-  }
-
-  [self hideBarsAnimationDidStop];
-  [self showBarsAnimationDidStop];
-  if (!_toolbar.alpha) {
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    if (!self.nextViewController) {
+      self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    }
+  
     [self hideBarsAnimationDidStop];
+    [self showBarsAnimationDidStop];
+    if (!_toolbar.alpha) {
+      [self hideBarsAnimationDidStop];
+    }
   }
 }
 
@@ -368,9 +379,10 @@ static const NSTimeInterval kSlideshowInterval = 2;
 
   [self pauseAction];
 
-  self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
-  self.view.frame = CGRectOffset(self.view.frame, 0, -TOOLBAR_HEIGHT);
-  
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    self.view.frame = CGRectOffset(self.view.frame, 0, -TOOLBAR_HEIGHT);
+  }
   if (self.nextViewController) {
     [self showBars:YES animated:NO];
   }

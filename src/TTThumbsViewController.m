@@ -29,13 +29,15 @@ static CGFloat kThumbnailRowHeight = 79;
 - (id)initWithController:(TTThumbsViewController*)controller {
   if (self = [super init]) {
     _controller = controller;
-    [_controller.photoSource.delegates addObject:self];
+    _photoSource = [_controller.photoSource retain];
+    [_photoSource.delegates addObject:self];
   }
   return self;
 }
 
 - (void)dealloc {
-  [_controller.photoSource.delegates removeObject:self];
+  [_photoSource.delegates removeObject:self];
+  [_photoSource release];
   [super dealloc];
 }
 
@@ -192,6 +194,10 @@ static CGFloat kThumbnailRowHeight = 79;
     self.navigationBarStyle = UIBarStyleBlackTranslucent;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
+
+    if ([self respondsToSelector:@selector(setWantsFullScreenLayout:)]) {
+      [self setWantsFullScreenLayout:YES];
+    }
   }
   
   return self;
@@ -212,7 +218,8 @@ static CGFloat kThumbnailRowHeight = 79;
   self.view.autoresizesSubviews = YES;
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  CGRect innerFrame = CGRectMake(0, -CHROME_HEIGHT,
+  CGFloat y = TTOSVersionIsAtLeast(3.0) ? 0 : -CHROME_HEIGHT;
+  CGRect innerFrame = CGRectMake(0, y,
                                  screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
   UIView* innerView = [[UIView alloc] initWithFrame:innerFrame];
   innerView.backgroundColor = TTSTYLEVAR(backgroundColor);
@@ -236,15 +243,19 @@ static CGFloat kThumbnailRowHeight = 79;
   [super viewDidAppear:animated];
   [self suspendLoadingThumbnails:NO];
 
-  if (!self.nextViewController) {
-    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    if (!self.nextViewController) {
+      self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+    }
   }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+  if (!TTOSVersionIsAtLeast(3.0)) {
+    self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
+  }
 }  
 
 - (void)viewDidDisappear:(BOOL)animated {

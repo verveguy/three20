@@ -66,9 +66,9 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (void)drawRect:(CGRect)rect {
   if (_highlighted) {
-    [_highlightedTextColor setFill];
+    [self.highlightedTextColor setFill];
   } else {
-    [_textColor setFill];
+    [self.textColor setFill];
   }
   
   CGPoint origin = CGPointMake(rect.origin.x + _contentInset.left,
@@ -83,7 +83,6 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (CGSize)sizeThatFits:(CGSize)size {
   [self layoutIfNeeded];
-  //_text.width = size.width + (_contentInset.left + _contentInset.right);
   return CGSizeMake(_text.width + (_contentInset.left + _contentInset.right),
                     _text.height+ (_contentInset.top + _contentInset.bottom));
 }
@@ -106,38 +105,41 @@ static const CGFloat kCancelHighlightThreshold = 4;
   }
 }
 
-- (void)setHighlightedFrame:(TTStyledBoxFrame*)frame {
-  TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
-
-  TTStyledBoxFrame* affectFrame = frame ? frame : _highlightedFrame;
-  NSString* className = affectFrame.element.className;
-  if (!className && [affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
-    className = @"linkText:";
-  }
-  
-  if (frame) {
-    TTStyle* style = [TTSTYLESHEET styleWithSelector:className forState:UIControlStateHighlighted];
-    [self setStyle:style forFrame:frame];
+- (void)setHighlightedFrame:(TTStyledBoxFrame*)frame{
+  if (frame != _highlightedFrame) {
+    TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
     
-    [_highlightedFrame release];
-    _highlightedFrame = [frame retain];
-    [_highlightedNode release];
-    _highlightedNode = [frame.element retain];
+    TTStyledBoxFrame* affectFrame = frame ? frame : _highlightedFrame;
+    NSString* className = affectFrame.element.className;
+    if (!className && [affectFrame.element isKindOfClass:[TTStyledLinkNode class]]) {
+      className = @"linkText:";
+    }
+    
+    if (className && [className rangeOfString:@":"].location != NSNotFound) {
+      if (frame) {
+        TTStyle* style = [TTSTYLESHEET styleWithSelector:className
+                                       forState:UIControlStateHighlighted];
+        [self setStyle:style forFrame:frame];
+        
+        [_highlightedFrame release];
+        _highlightedFrame = [frame retain];
+        [_highlightedNode release];
+        _highlightedNode = [frame.element retain];
+        tableView.highlightedLabel = self;
+      } else {
+        TTStyle* style = [TTSTYLESHEET styleWithSelector:className forState:UIControlStateNormal];
+        [self setStyle:style forFrame:_highlightedFrame];
 
-    tableView.highlightedLabel = self;
-  } else {
-    TTStyle* style = [TTSTYLESHEET styleWithSelector:className forState:UIControlStateNormal];
-    [self setStyle:style forFrame:_highlightedFrame];
+        [_highlightedFrame release];
+        _highlightedFrame = nil;
+        [_highlightedNode release];
+        _highlightedNode = nil;
+        tableView.highlightedLabel = nil;
+      }
 
-    [_highlightedFrame release];
-    _highlightedFrame = nil;
-    [_highlightedNode release];
-    _highlightedNode = nil;
-
-    tableView.highlightedLabel = nil;
+      [self setNeedsDisplay];
+    }
   }
-
-  [self setNeedsDisplay];
 }
 
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
@@ -155,12 +157,18 @@ static const CGFloat kCancelHighlightThreshold = 4;
 }
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-  if (_highlightedNode) {
-    [_highlightedNode performDefaultAction];    
-    [self setHighlightedFrame:nil];
+  TTTableView* tableView = (TTTableView*)[self firstParentOfClass:[TTTableView class]];
+  if (!tableView) {
+    if (_highlightedNode) {
+      [_highlightedNode performDefaultAction];    
+      [self setHighlightedFrame:nil];
+    }
   }
-
-  [super touchesEnded:touches withEvent:event];
+  if (!tableView || TTOSVersionIsAtLeast(3.0)) {
+    // We definitely don't want to call this if the label is inside a TTTableView, because
+    // it winds up calling touchesEnded on the table twice, triggering the link twice
+    [super touchesEnded:touches withEvent:event];
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,10 +225,11 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 - (void)setHighlightedNode:(TTStyledElement*)node {
   if (node != _highlightedNode) {
-    [_highlightedNode release];
-    _highlightedNode = [node retain];
     if (!node) {
       [self setHighlightedFrame:nil];
+    } else {
+      [_highlightedNode release];
+      _highlightedNode = [node retain];
     }
   }  
 }

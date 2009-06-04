@@ -2,6 +2,7 @@
 #import "Three20/TTTableField.h"
 #import "Three20/TTTableFieldCell.h"
 #import "Three20/TTURLCache.h"
+#import "Three20/TTSearchBar.h"
 #import <objc/runtime.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,6 +139,8 @@
     } else {
       return [TTTextTableFieldCell class];
     }
+  } else if ([object isKindOfClass:[TTSearchBar class]]) {
+    return [TTSearchBarTableFieldCell class];
   }
   
   // This will display an empty white table cell - probably not what you want, but it
@@ -369,7 +372,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-  if (_sections) {
+  if (_sections.count) {
     NSArray* items = [_items objectAtIndex:section];
     return items.count;
   } else {

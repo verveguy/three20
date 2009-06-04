@@ -24,6 +24,7 @@
 @property(nonatomic,readonly) UIColor* tableHeaderTextColor;
 @property(nonatomic,readonly) UIColor* tableHeaderShadowColor;
 @property(nonatomic,readonly) UIColor* tableHeaderTintColor;
+@property(nonatomic,readonly) UIColor* tableSeparatorColor;
 @property(nonatomic,readonly) UIColor* searchTableBackgroundColor;
 @property(nonatomic,readonly) UIColor* searchTableSeparatorColor;
 
@@ -40,6 +41,7 @@
 @property(nonatomic,readonly) UIFont* tableFont;
 @property(nonatomic,readonly) UIFont* tableSmallFont;
 @property(nonatomic,readonly) UIFont* tableTitleFont;
+@property(nonatomic,readonly) UIFont* tableTitleValueFont;
 @property(nonatomic,readonly) UIFont* tableButtonFont;
 @property(nonatomic,readonly) UIFont* tableSummaryFont;
 @property(nonatomic,readonly) UIFont* photoCaptionFont;
@@ -52,5 +54,6 @@
             tintColor:(UIColor*)tintColor font:(UIFont*)font;
 
 - (TTStyle*)selectionFillStyle:(TTStyle*)next;
+
 
 @end

@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "Three20/NSObjectAdditions.h"
 #import "Three20/NSStringAdditions.h"
+#import "Three20/NSDateAdditions.h"
 #import "Three20/NSArrayAdditions.h"
 #import "Three20/UIColorAdditions.h"
 #import "Three20/UIImageAdditions.h"
@@ -123,6 +124,11 @@ typedef enum {
 NSMutableArray* TTCreateNonRetainingArray();
 
 /**
+ * Creates a mutable dictionary which does not retain references to the values it contains.
+ */
+NSMutableDictionary* TTCreateNonRetainingDictionary();
+
+/**
  * Tests if an object is an array which is empty.
  */
 BOOL TTIsEmptyArray(NSObject* object);
@@ -179,6 +185,16 @@ void TTNetworkRequestStarted();
  * The status bar activity indicator will be spinning while there are active requests.
  */
 void TTNetworkRequestStopped();
+
+/**
+ * Gets the current runtime version of iPhone OS.
+ */
+float TTOSVersion();
+
+/**
+ * Checks if the link-time version of the OS is at least a certain version.
+ */
+BOOL TTOSVersionIsAtLeast(float version);
 
 /**
  * Gets the current system locale chosen by the user.
