@@ -5,4 +5,5 @@
  * nothing obscures any of part of this view and its contents.
  */
 @interface TTUnclippedView : UIView
+- (void)unclip;
 @end
