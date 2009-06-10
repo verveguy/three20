@@ -9,6 +9,7 @@
 #import "Three20/TTNavigationCenter.h"
 #import "Three20/TTURLCache.h"
 #import "Three20/TTDefaultStyleSheet.h"
+#import "Three20/TTSearchBar.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -271,6 +272,10 @@ static CGFloat kDefaultIconSize = 50;
     _titleLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
     _titleLabel.textAlignment = UITextAlignmentRight;
     [self.contentView addSubview:_titleLabel];
+    
+    _label.font = TTSTYLEVAR(tableTitleValueFont);
+    _label.adjustsFontSizeToFitWidth = YES;
+    _label.minimumFontSize = 8;
 	}
 	return self;
 }
@@ -1143,3 +1148,49 @@ static CGFloat kDefaultIconSize = 50;
 }
 
 @end
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+@implementation TTSearchBarTableFieldCell
+
++ (CGFloat)tableView:(UITableView*)tableView rowHeightForItem:(id)item {
+  return TOOLBAR_HEIGHT;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString*)identifier {
+  if (self = [super initWithFrame:frame reuseIdentifier:identifier]) {
+    _searchBar = nil;
+	}
+	return self;
+}
+
+- (void)dealloc {
+  [_searchBar release];
+	[super dealloc];
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  _searchBar.frame = self.contentView.bounds;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// TTTableViewCell
+
+- (id)object {
+  return _searchBar;
+}
+
+- (void)setObject:(id)object {
+  if (_searchBar != object) {
+    [_searchBar removeFromSuperview];
+    [_searchBar release];
+    _searchBar = [object retain];
+    [self.contentView addSubview:_searchBar];
+  }  
+}
+
+@end
+

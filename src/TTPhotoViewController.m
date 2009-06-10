@@ -44,11 +44,9 @@ static const NSTimeInterval kSlideshowInterval = 2;
     self.navigationBarTintColor = nil;
     self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
     
-#ifdef __IPHONE_3_0
-    if (TTOSVersion() >= 3.0) {
+    if ([self respondsToSelector:@selector(setWantsFullScreenLayout:)]) {
       [self setWantsFullScreenLayout:YES];
     }
-#endif
   }
   return self;
 }
@@ -302,7 +300,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
 }
 
 - (void)showBarsAnimationDidStop {
-  if (TTOSVersion() < 3.0) {
+  if (!TTOSVersionIsAtLeast(3.0)) {
     _innerView.top = -CHROME_HEIGHT;
     self.view.top = TOOLBAR_HEIGHT;
     self.view.height -= TOOLBAR_HEIGHT;
@@ -311,7 +309,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
 }
 
 - (void)hideBarsAnimationDidStop {
-  if (TTOSVersion() < 3.0) {
+  if (!TTOSVersionIsAtLeast(3.0)) {
     _innerView.top = -STATUS_HEIGHT;
     self.view.top = 0;
     self.view.height += TOOLBAR_HEIGHT;
@@ -326,7 +324,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
   CGRect screenFrame = [UIScreen mainScreen].bounds;
   self.view = [[[TTUnclippedView alloc] initWithFrame:screenFrame] autorelease];
     
-  CGFloat y = TTOSVersion() < 3.0 ? -CHROME_HEIGHT : 0;
+  CGFloat y = TTOSVersionIsAtLeast(3.0) ? 0 : -CHROME_HEIGHT;
   CGRect innerFrame = CGRectMake(0, y,
                                  screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
   _innerView = [[UIView alloc] initWithFrame:innerFrame];
@@ -363,7 +361,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  if (TTOSVersion() < 3.0) {
+  if (!TTOSVersionIsAtLeast(3.0)) {
     if (!self.nextViewController) {
       self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
     }
@@ -381,7 +379,7 @@ static const NSTimeInterval kSlideshowInterval = 2;
 
   [self pauseAction];
 
-  if (TTOSVersion() < 3.0) {
+  if (!TTOSVersionIsAtLeast(3.0)) {
     self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
     self.view.frame = CGRectOffset(self.view.frame, 0, -TOOLBAR_HEIGHT);
   }
