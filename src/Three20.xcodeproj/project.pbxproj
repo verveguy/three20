@@ -309,7 +309,7 @@
 				BEB46A860F8F8170004B34A0 /* Layout */,
 				BEB46A870F8F818F004B34A0 /* Styled Text */,
 				BEF321B30F353B78000DE5D2 /* View Controllers */,
-				BEF31F450F352E64000DE5D2 /* Three20 */,
+				BEF31F450F352E64000DE5D2 /* Views */,
 				BEB460380F8EDE60004B34A0 /* Labels */,
 				BED631A10F88554F009923D8 /* Buttons and Tabs */,
 				BEE341A40F480B91008C826E /* Text Fields */,
@@ -484,7 +484,7 @@
 			name = "Text Fields";
 			sourceTree = "<group>";
 		};
-		BEF31F450F352E64000DE5D2 /* Three20 */ = {
+		BEF31F450F352E64000DE5D2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				BEF31F5F0F352E64000DE5D2 /* TTView.h */,
@@ -496,8 +496,9 @@
 				BEF31F630F352E64000DE5D2 /* TTScrollView.h */,
 				BEF31F4D0F352E64000DE5D2 /* TTScrollView.m */,
 			);
-			name = Three20;
-			sourceTree = "<group>";
+			name = Views;
+			path = ../src;
+			sourceTree = SOURCE_ROOT;
 		};
 		BEF321B00F353B15000DE5D2 /* Network */ = {
 			isa = PBXGroup;
@@ -639,6 +640,7 @@
 				BE8541010F998FA900DA3E9E /* TTStyledFrame.h in Headers */,
 				BE1942770F9ACE85005F4EFC /* TTStyledLayout.h in Headers */,
 				BEB210D40FA3E784007DEE5F /* NSStringAdditions.h in Headers */,
+				91552D630FAB648100F4578C /* TTDateField.h in Headers */,
 				BEA69ECD0FAC0FEC00DA7DDC /* TTWebController.h in Headers */,
 				BEA762500FBA1E290091B567 /* NSDateAdditions.h in Headers */,
 				91552D630FAB648100F4578C /* TTDateField.h in Headers */,
@@ -747,6 +749,7 @@
 				BE8541030F998FB800DA3E9E /* TTStyledFrame.m in Sources */,
 				BE1942880F9ACEA7005F4EFC /* TTStyledLayout.m in Sources */,
 				BEB210D20FA3E77E007DEE5F /* NSStringAdditions.m in Sources */,
+				91552D5F0FAB636100F4578C /* TTDateField.m in Sources */,
 				BEA69ECB0FAC0FD600DA7DDC /* TTWebController.m in Sources */,
 				BEA7624E0FBA1E220091B567 /* NSDateAdditions.m in Sources */,
 				91552D5F0FAB636100F4578C /* TTDateField.m in Sources */,
