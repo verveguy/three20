@@ -624,4 +624,36 @@ static TTURLRequestQueue* gMainQueue = nil;
   }
 }
 
+- (NSURLRequest*)createNSURLRequest:(TTURLRequest*)request url:(NSURL*)url {
+  if (!url) {
+    url = [NSURL URLWithString:request.url];
+  }
+  
+  NSMutableURLRequest* urlRequest = [NSMutableURLRequest requestWithURL:url
+                                    cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                    timeoutInterval:kTimeout];
+  [urlRequest setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
+
+  if (request) {
+    [urlRequest setHTTPShouldHandleCookies:request.shouldHandleCookies];
+    
+    NSString* method = request.httpMethod;
+    if (method) {
+      [urlRequest setHTTPMethod:method];
+    }
+    
+    NSString* contentType = request.contentType;
+    if (contentType) {
+      [urlRequest setValue:contentType forHTTPHeaderField:@"Content-Type"];
+    }
+    
+    NSData* body = request.httpBody;
+    if (body) {
+      [urlRequest setHTTPBody:body];
+    }
+  }
+  
+  return urlRequest;
+}
+
 @end

@@ -5,7 +5,7 @@
 @interface TTURLRequest : NSObject {
   NSString* _url;
   NSString* _httpMethod;
-  NSData* _httpBody;	
+  NSData* _httpBody;
   NSMutableDictionary* _parameters;
   NSMutableDictionary* _headers;
   NSString* _contentType;
@@ -114,6 +114,8 @@
  * Sets the specified HTTP header field.
  */
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field;
+
+- (NSURLRequest*)createNSURLRequest;
 
 @end
 
