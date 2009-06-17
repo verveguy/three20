@@ -62,6 +62,10 @@ static const CGFloat kRefreshingViewHeight = 22;
 
 - (void)dealloc {
   [_tableDelegate release];
+  [_dataSource release];
+  _dataSource = nil;
+  [_tableView release];
+  _tableView = nil;
   [super dealloc];
 }
 
@@ -277,6 +281,10 @@ static const CGFloat kRefreshingViewHeight = 22;
 }
 
 - (void)didSelectObject:(id)object atIndexPath:(NSIndexPath*)indexPath {
+}
+
+- (BOOL)shouldNavigateToURL:(NSString*)url {
+  return YES;
 }
 
 - (void)didBeginDragging {
