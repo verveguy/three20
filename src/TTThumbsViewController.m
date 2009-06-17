@@ -218,15 +218,43 @@ static CGFloat kThumbnailRowHeight = 79;
   self.view.autoresizesSubviews = YES;
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  CGFloat y = TTOSVersionIsAtLeast(3.0) ? 0 : -CHROME_HEIGHT;
-  CGRect innerFrame = CGRectMake(0, y,
-                                 screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
+  CGRect innerFrame;
+  
+  if (TTOSVersion() >= 3.0)
+  {
+    innerFrame = CGRectMake(0, 0,
+                                 screenFrame.size.width, screenFrame.size.height);
+  }
+  else
+  {
+    innerFrame = CGRectMake(0, -CHROME_HEIGHT,
+                              screenFrame.size.width, screenFrame.size.height + CHROME_HEIGHT);
+  }
+  
   UIView* innerView = [[[UIView alloc] initWithFrame:innerFrame] autorelease];
   innerView.backgroundColor = TTSTYLEVAR(backgroundColor);
-  [self.view addSubview:innerView];
   
-  CGRect tableFrame = CGRectMake(0, CHROME_HEIGHT,
+  CGRect tableFrame;
+
+  if (TTOSVersion() >= 3.0)
+  {
+    // we are on 3.0 device, but compiler also matters
+    if (TTOSVersionIsAtLeast(3.0))
+    {
+      tableFrame = CGRectMake(0, CHROME_HEIGHT,
                                  screenFrame.size.width, screenFrame.size.height - CHROME_HEIGHT);
+    }
+    else
+    {
+      tableFrame = CGRectMake(0, TOOLBAR_HEIGHT,
+                                 screenFrame.size.width, screenFrame.size.height - TOOLBAR_HEIGHT);
+    }
+  }
+  else
+  {
+    tableFrame = CGRectMake(0, CHROME_HEIGHT,
+                                 screenFrame.size.width, screenFrame.size.height - CHROME_HEIGHT);
+  }
   self.tableView = [[[UITableView alloc] initWithFrame:tableFrame
                                          style:UITableViewStylePlain] autorelease];
   self.tableView.rowHeight = kThumbnailRowHeight;
@@ -236,14 +264,16 @@ static CGFloat kThumbnailRowHeight = 79;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.tableView.contentInset = UIEdgeInsetsMake(4, 0, 0, 0);
   self.tableView.clipsToBounds = NO;
+  
   [innerView addSubview:self.tableView];
+  [self.view addSubview:innerView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self suspendLoadingThumbnails:NO];
 
-  if (!TTOSVersionIsAtLeast(3.0)) {
+  if (TTOSVersion() < 3.0) {
     if (!self.nextViewController) {
       self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
     }
@@ -253,7 +283,7 @@ static CGFloat kThumbnailRowHeight = 79;
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  if (!TTOSVersionIsAtLeast(3.0)) {
+  if (TTOSVersion() < 3.0) {
     self.view.superview.frame = CGRectOffset(self.view.superview.frame, 0, TOOLBAR_HEIGHT);
   }
 }  
