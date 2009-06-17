@@ -643,7 +643,6 @@
 				91552D630FAB648100F4578C /* TTDateField.h in Headers */,
 				BEA69ECD0FAC0FEC00DA7DDC /* TTWebController.h in Headers */,
 				BEA762500FBA1E290091B567 /* NSDateAdditions.h in Headers */,
-				91552D630FAB648100F4578C /* TTDateField.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -752,7 +751,6 @@
 				91552D5F0FAB636100F4578C /* TTDateField.m in Sources */,
 				BEA69ECB0FAC0FD600DA7DDC /* TTWebController.m in Sources */,
 				BEA7624E0FBA1E220091B567 /* NSDateAdditions.m in Sources */,
-				91552D5F0FAB636100F4578C /* TTDateField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,7 +794,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = .;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator2.2;
 			};
@@ -810,7 +811,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator2.2;
 			};
